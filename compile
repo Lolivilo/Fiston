@@ -1,0 +1,3 @@
+#! /bin/bash
+
+gcc -Wall main.c strategy.c strategy.h backgammon.h -o back

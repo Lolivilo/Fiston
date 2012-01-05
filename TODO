@@ -1,0 +1,18 @@
+TODO
+
+- Si pion au milieu => obligation de les replacer avant tout autre mouvement
+- Si, après un mouvement, un pion va dans le zone de marquage (dépasse les 24 zones) => il faut que tous les pions soient au moins dans la zone 18
+
+DONE
+- Calcul de tous les mouvements possibles à partir de la disposition de départ (à priori, n'importe quelle disposition doit fonctionner aussi). TODO à ajouter à cette fonction
+- Verification si possibilité de "manger"
+- Verification si possibilité de "marquer"
+- Les dés sont représentés dans un tableau
+- Si un mouvement permet de manger, on le sélectionne et on supprime le dé utilise
+
+04/01/12
+- Nouvelle fonction ListPotenialMoves -> ListPotentialMoves2 (normalement utilisable même après un choix de mouvement)
+- Dans ChooseMove : si aucune priorité, on prend le premier mouvement de la liste
+- Dans ChooseMove : affichage du mouvement choisi (temporaire)
+- UpdateAfterDecision : Rappel du listage des mouvements
+- A priori, fonctionne avec dés 3 et 5 ; à tester pour d'autres
