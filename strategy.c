@@ -100,10 +100,7 @@ void ListPotentialMoves()
 			// De 1
 			if(dies[1] != -1)	// Si le de n est pas utilise
 			{
-				if((currentGameState.zones[zone + dies[1]].player == EPlayer1)	// Si la zone d arrivee nous appartient
-                || (currentGameState.zones[zone + dies[1]].nb_checkers == 0)		// Ou si la zone d arrive n a aucun pion
-                || (currentGameState.zones[zone + dies[1]].player == EPlayer2		// Ou si la zone est adverse avec un seul pion
-                && currentGameState.zones[zone + dies[1]].nb_checkers == 1))
+				DEST(dies[1])  // Conditionnelle : teste si le point d arrivee est possible
 				{
 					potentialMoves[i].from = zone;
 					potentialMoves[i].to = zone + dies[1];
@@ -114,10 +111,7 @@ void ListPotentialMoves()
 			// De 2
 			if(dies[2] != -1 && dies[2] != dies[1])
 			{
-				if((currentGameState.zones[zone + dies[2]].player == EPlayer1)		// Si la zone d arrivee nous appartient
-                || (currentGameState.zones[zone + dies[2]].nb_checkers == 0)		// Ou si la zone d arrive n a aucun pion
-                || (currentGameState.zones[zone + dies[2]].player == EPlayer2		// Ou si la zone est adverse avec un seul pion
-                && currentGameState.zones[zone + dies[2]].nb_checkers == 1))
+				DEST(dies[2])  // Conditionnelle : teste si le point d arrivee est possible
 				{
 					potentialMoves[i].from = zone;
 					potentialMoves[i].to = zone + dies[2];
@@ -128,11 +122,8 @@ void ListPotentialMoves()
 			// De 3
 			if(dies[3] != -1 && dies[3] != dies[1] && dies[3] != dies[2])			// Il faut que le de existe et que la valeur le soit pas deja evaluee
 			{
-				if((currentGameState.zones[zone + dies[3]].player == EPlayer1)		// Si la zone d arrivee nous appartient
-                || (currentGameState.zones[zone + dies[3]].nb_checkers == 0)		// Ou si la zone d arrive n a aucun pion
-                || (currentGameState.zones[zone + dies[3]].player == EPlayer2		// Ou si la zone est adverse avec un seul pion
-                && currentGameState.zones[zone + dies[3]].nb_checkers == 1))
-				{
+				DEST(dies[3])  // Conditionnelle : teste si le point d arrivee est possible
+                {
 					potentialMoves[i].from = zone;
 					potentialMoves[i].to = zone + dies[3];
 					PriorityLevel(&potentialMoves[i]);	// Evaluation du mouvement tout juste ajoute
@@ -142,10 +133,7 @@ void ListPotentialMoves()
 			// De 4
 			if(dies[4] != -1 && dies[4] != dies[1] && dies[4] != dies[2] && dies[4] != dies[3])	// Il faut que le de existe et que la valeur le soit pas deja evaluee
 			{
-				if((currentGameState.zones[zone + dies[4]].player == EPlayer1)		// Si la zone d arrivee nous appartient
-                || (currentGameState.zones[zone + dies[4]].nb_checkers == 0)		// Ou si la zone d arrive n a aucun pion
-                || (currentGameState.zones[zone + dies[4]].player == EPlayer2		// Ou si la zone est adverse avec un seul pion
-                && currentGameState.zones[zone + dies[4]].nb_checkers == 1))
+				DEST(dies[4])  // Conditionnelle : teste si le point d arrivee est possible
 				{
 					potentialMoves[i].from = zone;
 					potentialMoves[i].to = zone + dies[4];
@@ -198,17 +186,17 @@ void PriorityLevel(Strat_move* move)
 
 /** ChooseMove
   * Selectionne un mouvement dans le tableau de mouvements potentiels
-  * &param Strat_move currentList[MAX_POTENTIAL_MOVES] : liste des mouvements potentiels
+  * @param Strat_move currentList[MAX_POTENTIAL_MOVES] : liste des mouvements potentiels
 **/
-void ChooseMove(Strat_move currentList[MAX_POTENTIAL_MOVES])
+void ChooseMove()
 {
     int i = 0;
 	int choosen = 0;
     // Priorite 1 : Si on peut proteger un pion seul
-    while(currentList[i].from != -1 && !(choosen))
+    while(potentialMoves[i].from != -1 && !(choosen))
 	{
 		// SELECTIONNER QUEL PION A MANGER SI PLUSIEURS
-		if(currentList[i].canProtect)
+		if(potentialMoves[i].canProtect)
 		{
 			choosen = 1;
 		}
@@ -220,10 +208,10 @@ void ChooseMove(Strat_move currentList[MAX_POTENTIAL_MOVES])
     {
         i = 0;
     }
-	while(currentList[i].from != -1 && !(choosen))
+	while(potentialMoves[i].from != -1 && !(choosen))
 	{
 		// SELECTIONNER QUEL PION A MANGER SI PLUSIEURS
-		if(currentList[i].canEat)
+		if(potentialMoves[i].canEat)
 		{
 			choosen = 1;
 		}
@@ -234,9 +222,9 @@ void ChooseMove(Strat_move currentList[MAX_POTENTIAL_MOVES])
         i = 1;
 	}
     // On copie le mouvement dans le tableau d envoi final
-    mov[0].src_point = currentList[i-1].from;
-    mov[0].dest_point = currentList[i-1].to;
-    printf("Choix du mouvement %d -> %d\n", currentList[i-1].from, currentList[i-1].to);	// A ENLEVER PLUS TARD : AFFICHAGE DU MOUVEMENT CHOISI
+    mov[0].src_point = potentialMoves[i-1].from;
+    mov[0].dest_point = potentialMoves[i-1].to;
+    printf("Choix du mouvement %d -> %d\n", potentialMoves[i-1].from, potentialMoves[i-1].to);	// A ENLEVER PLUS TARD : AFFICHAGE DU MOUVEMENT CHOISI
     printf("Appel : UpdateAfterDecision(%d)\n", i-1);	// A ENLEVER PLUS TARD
 	// Appel de la fonction qui met a jour la liste des mouvements
     if(!(choosen))

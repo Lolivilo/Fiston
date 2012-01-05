@@ -4,6 +4,10 @@
 
 #define MAX_POTENTIAL_MOVES 100
 
+#define DEST(de) if((currentGameState.zones[zone + de].player == EPlayer1) \
+               || (currentGameState.zones[zone + de].nb_checkers == 0)	\
+               || (currentGameState.zones[zone + de].player == EPlayer2 \
+                   && currentGameState.zones[zone + de].nb_checkers == 1)) \
 
 
 // Structure locale de la strategie representant un mouvement possible en fonction de l'etat courant du jeu
@@ -20,7 +24,7 @@ typedef struct
 void ListPotentialMoves();
 void UpdateAfterDecision(int previousMoveIndex);
 void PriorityLevel(Strat_move* move);
-void ChooseMove(Strat_move currentList[MAX_POTENTIAL_MOVES]);
+void ChooseMove();
 
 
 #endif
