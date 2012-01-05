@@ -13,6 +13,7 @@ typedef struct
 	int to;			// Point d arrivee
 	int canEat;		// Possibilite de manger (booleen)
 	int canMark;	// Possibilite de marquer (booleen)
+    int canProtect; // Possibilite de proteger (booleen)
 } Strat_move;
 
 // Prototypes de fonctions

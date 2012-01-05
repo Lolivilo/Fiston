@@ -20,3 +20,5 @@ DONE
 05/01/12
 - Amelioration de ListPoentialMoves (fonctionne, a priori, avec 3 des aussi)
 - Deplacement de la MaJ des dés dans la fonction UpdateAfterDecision
+- Si on mange un pion, on ne change pas le nombre de pion sur la zone
+- Ajout du boolean canProtect dans la structure locale

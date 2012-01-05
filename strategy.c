@@ -86,6 +86,7 @@ void ListPotentialMoves()
 		potentialMoves[i].to = -1;
 		potentialMoves[i].canEat = 0;
 		potentialMoves[i].canMark = 0;
+        potentialMoves[i].canProtect = 0;
 	}
 	i = 0;
 
@@ -157,7 +158,7 @@ void ListPotentialMoves()
 	int j = 0;
 	while(potentialMoves[j].from != -1)
 	{
-		printf("MOUVEMENT %d : Depart de %d ; Arrivee de %d ; Mangeur?%d ; Marqueur?%d\n", j, potentialMoves[j].from, potentialMoves[j].to, potentialMoves[j].canEat, potentialMoves[j].canMark);
+		printf("MOUVEMENT %d : Depart de %d ; Arrivee de %d ; Mangeur?%d ; Marqueur?%d ; Protecteur?%d\n", j, potentialMoves[j].from, potentialMoves[j].to, potentialMoves[j].canEat, potentialMoves[j].canMark, potentialMoves[j].canProtect);
 		j++;
 	}
 	ChooseMove(potentialMoves);
@@ -174,6 +175,11 @@ void ListPotentialMoves()
 void PriorityLevel(Strat_move* move)
 {
 	SZone zoneArrivee = currentGameState.zones[move->to];
+    // Peut-il proteger un pion seul ?
+    if(zoneArrivee.player == EPlayer1 && zoneArrivee.nb_checkers == 1)
+    {
+        move->canProtect = 1;
+    }
 	if(zoneArrivee.player == EPlayer2 && zoneArrivee.nb_checkers == 1)
 	{
 		move->canEat = 1;
@@ -194,9 +200,28 @@ void PriorityLevel(Strat_move* move)
 **/
 void ChooseMove(Strat_move currentList[MAX_POTENTIAL_MOVES])
 {
-	// Priorite 1 : Si mouvement permet de manger un pion adverse
-	int i = 0;
+    int i = 0;
 	int choosen = 0;
+    // Priorite 1 : Si on peut proteger un pion seul
+    while(currentList[i].from != -1 && !(choosen))
+	{
+		// SELECTIONNER QUEL PION A MANGER SI PLUSIEURS
+		if(currentList[i].canProtect)
+		{
+			choosen = 1;
+			mov[0].src_point = currentList[i].from;
+			mov[0].dest_point = currentList[i].to;
+			printf("Choix du mouvement %d -> %d (car protecteur)\n", currentList[i].from, currentList[0].to);	// A ENLEVER PLUS TARD : AFFICHAGE DU MOUVEMENT CHOISI
+			printf("Appel : UpdateAfterDecision(%d)\n", i);	// A ENLEVER PLUS TARD
+		}
+		i++;
+	}
+
+	// Priorite 2 : Si mouvement permet de manger un pion adverse
+	if(!(choosen))
+    {
+        i = 0;
+    }
 	while(currentList[i].from != -1 && !(choosen))
 	{
 		// SELECTIONNER QUEL PION A MANGER SI PLUSIEURS
@@ -205,7 +230,7 @@ void ChooseMove(Strat_move currentList[MAX_POTENTIAL_MOVES])
 			choosen = 1;
 			mov[0].src_point = currentList[i].from;
 			mov[0].dest_point = currentList[i].to;
-			printf("Choix du mouvement %d -> %d\n", currentList[i].from, currentList[0].to);	// A ENLEVER PLUS TARD : AFFICHAGE DU MOUVEMENT CHOISI
+			printf("Choix du mouvement %d -> %d (car mangeur)\n", currentList[i].from, currentList[0].to);	// A ENLEVER PLUS TARD : AFFICHAGE DU MOUVEMENT CHOISI
 			printf("Appel : UpdateAfterDecision(%d)\n", i);	// A ENLEVER PLUS TARD
 		}
 		i++;
@@ -214,7 +239,7 @@ void ChooseMove(Strat_move currentList[MAX_POTENTIAL_MOVES])
 	{
 		mov[0].src_point = currentList[0].from;
 		mov[0].dest_point = currentList[0].to;
-		printf("Choix du mouvement %d -> %d\n", currentList[0].from, currentList[0].to);	// A ENLEVER PLUS TARD : AFFICHAGE DU MOUVEMENT CHOISI
+		printf("Choix du mouvement %d -> %d (defaut)\n", currentList[0].from, currentList[0].to);	// A ENLEVER PLUS TARD : AFFICHAGE DU MOUVEMENT CHOISI
 		printf("Appel : UpdateAfterDecision(%d)\n", 0);	// A ENLEVER PLUS TARD
 	}
 	// Appel de la fonction qui met a jour la liste des mouvements
@@ -240,7 +265,10 @@ void UpdateAfterDecision(int previousMoveIndex)
 	// 1 : MaJ du GameState
 	printf("J'enlève un pion à la case %d\nJ'ajoute un pion à la case %d\n", lastMove.from, lastMove.to);	// A ENLEVER
 	currentGameState.zones[lastMove.from].nb_checkers--;
-	currentGameState.zones[lastMove.to].nb_checkers++;
+    if(lastMove.canEat != 1)    // On ne change pas le nombre de pion si on mange un ennemi (changement de couleur)
+    {
+        currentGameState.zones[lastMove.to].nb_checkers++;
+    }
     printf("Il reste %d pions sur la zone 0\n", currentGameState.zones[lastMove.from].nb_checkers); // A ENLEVER
 	currentGameState.zones[lastMove.to].player = EPlayer1;
 	// 2 : MaJ des des
