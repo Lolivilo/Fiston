@@ -192,6 +192,8 @@ void PriorityLevel(Strat_move* move)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+// UNE SEULE FOIS L AFFECTATION DANS LE TABLEAU FINAL ???!!!
+
 
 
 /** ChooseMove
@@ -209,10 +211,6 @@ void ChooseMove(Strat_move currentList[MAX_POTENTIAL_MOVES])
 		if(currentList[i].canProtect)
 		{
 			choosen = 1;
-			mov[0].src_point = currentList[i].from;
-			mov[0].dest_point = currentList[i].to;
-			printf("Choix du mouvement %d -> %d (car protecteur)\n", currentList[i].from, currentList[0].to);	// A ENLEVER PLUS TARD : AFFICHAGE DU MOUVEMENT CHOISI
-			printf("Appel : UpdateAfterDecision(%d)\n", i);	// A ENLEVER PLUS TARD
 		}
 		i++;
 	}
@@ -228,20 +226,18 @@ void ChooseMove(Strat_move currentList[MAX_POTENTIAL_MOVES])
 		if(currentList[i].canEat)
 		{
 			choosen = 1;
-			mov[0].src_point = currentList[i].from;
-			mov[0].dest_point = currentList[i].to;
-			printf("Choix du mouvement %d -> %d (car mangeur)\n", currentList[i].from, currentList[0].to);	// A ENLEVER PLUS TARD : AFFICHAGE DU MOUVEMENT CHOISI
-			printf("Appel : UpdateAfterDecision(%d)\n", i);	// A ENLEVER PLUS TARD
 		}
 		i++;
 	}
 	if(!(choosen))	// A ENLEVER PLUS TARD : SI AUCUN CHOIX, ON PREND LE PREMIER MOUVEMENT
 	{
-		mov[0].src_point = currentList[0].from;
-		mov[0].dest_point = currentList[0].to;
-		printf("Choix du mouvement %d -> %d (defaut)\n", currentList[0].from, currentList[0].to);	// A ENLEVER PLUS TARD : AFFICHAGE DU MOUVEMENT CHOISI
-		printf("Appel : UpdateAfterDecision(%d)\n", 0);	// A ENLEVER PLUS TARD
+        i = 1;
 	}
+    // On copie le mouvement dans le tableau d envoi final
+    mov[0].src_point = currentList[i-1].from;
+    mov[0].dest_point = currentList[i-1].to;
+    printf("Choix du mouvement %d -> %d\n", currentList[i-1].from, currentList[i-1].to);	// A ENLEVER PLUS TARD : AFFICHAGE DU MOUVEMENT CHOISI
+    printf("Appel : UpdateAfterDecision(%d)\n", i-1);	// A ENLEVER PLUS TARD
 	// Appel de la fonction qui met a jour la liste des mouvements
     if(!(choosen))
     {

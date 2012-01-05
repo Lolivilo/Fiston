@@ -22,4 +22,5 @@ void UpdateAfterDecision(int previousMoveIndex);
 void PriorityLevel(Strat_move* move);
 void ChooseMove(Strat_move currentList[MAX_POTENTIAL_MOVES]);
 
+
 #endif
