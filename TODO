@@ -16,3 +16,7 @@ DONE
 - Dans ChooseMove : affichage du mouvement choisi (temporaire)
 - UpdateAfterDecision : Rappel du listage des mouvements
 - A priori, fonctionne avec dés 3 et 5 ; à tester pour d'autres
+
+05/01/12
+- Amelioration de ListPoentialMoves (fonctionne, a priori, avec 3 des aussi)
+- Deplacement de la MaJ des dés dans la fonction UpdateAfterDecision
