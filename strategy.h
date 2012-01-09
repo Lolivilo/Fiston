@@ -26,6 +26,6 @@ void ListPotentialMoves();
 void UpdateAfterDecision(int previousMoveIndex);
 void PriorityLevel(Strat_move* move);
 void ChooseMove();
-
+EPosition FindSecuredAdvance();
 
 #endif

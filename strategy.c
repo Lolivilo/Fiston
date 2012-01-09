@@ -8,8 +8,8 @@
 // Variables locales
 SGameState currentGameState;
 Strat_move potentialMoves[MAX_POTENTIAL_MOVES];
-int dies[5];	// | 0 si 2 des ; 1 sinon | de1 | de2 | de3 | de4 |
-SMove finaleMoves[4];
+int dies[5];	// | nombre_de_des | de1 | de2 | de3 | de4 |
+SMove finalMoves[4];
 
 
 void InitLibrary(char name[50])
@@ -65,13 +65,13 @@ void MakeDecision(const SGameState * const gameState, SMove moves[4], unsigned i
 	{
 		dies[3] = dies[1];
 		dies[4] = dies[1];
-		dies[0] = 1;
+		dies[0] = 4;
 	}
 	else
 	{
 		dies[3] = -1;
 		dies[4] = -1;
-		dies[0] = 0;
+		dies[0] = 2;
 	}
 	printf("DES INITIAUX : | %d | %d | %d | %d |\n", dies[1], dies[2], dies[3], dies[4]);	
 	ListPotentialMoves();
@@ -200,6 +200,11 @@ void ChooseMove()
 {
     int i = 0;
 	int choosen = 0;
+    
+    // Si deux mouvements permettent une avancee protegee (deux pions sur une zone), on joue ces mouvements
+    EPosition securedAdvanceDest = FindSecuredAdvance();
+    
+    
     // Priorite 1 : Si on peut proteger un pion seul
     while(potentialMoves[i].from != -1 && !(choosen))
 	{
@@ -230,8 +235,6 @@ void ChooseMove()
         i = 1;
 	}
     // On copie le mouvement dans le tableau d envoi final
-    int movIndex = 0;
-    while(mov
     finalMoves[0].src_point = potentialMoves[i-1].from;
     finalMoves[0].dest_point = potentialMoves[i-1].to;
     printf("Choix du mouvement %d -> %d\n", potentialMoves[i-1].from, potentialMoves[i-1].to);	// A ENLEVER PLUS TARD : AFFICHAGE DU MOUVEMENT CHOISI
@@ -274,14 +277,29 @@ void UpdateAfterDecision(int previousMoveIndex)
         {
             found = 1;
             dies[value] = -1;
+            dies[0]--;
         }
         value++;
     }
     //A SUPPRIMER : AFFICHAGE DE LA LISTE DES DES APRES UN CHOIX
 	printf("DES : | %d | %d | %d | %d |\n", dies[1], dies[2], dies[3], dies[4]);
 	// 3 : On recomment l evaluation du plateau seulement s il reste des des
-	if(!(dies[1] == -1 && dies[2] == -1 && dies[3] == -1 && dies[4] == -1 ))
+	//if(!(dies[1] == -1 && dies[2] == -1 && dies[3] == -1 && dies[4] == -1 ))
+    if(dies[0] > 0)
 	{
 		ListPotentialMoves();
 	}
+}
+
+          
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/** int FindSecuredAdvance()
+  *
+  * Determine si deux mouvements permettant une avancee securisee (deux pions sur une meme zone) sont possibles
+  * @return EPosition : la zone destination de l avancee securisee
+**/
+EPosition FindSecuredAdvance()
+{
+    return EPos_1;
 }
