@@ -22,3 +22,6 @@ DONE
 - Deplacement de la MaJ des dés dans la fonction UpdateAfterDecision
 - Si on mange un pion, on ne change pas le nombre de pion sur la zone
 - Ajout du boolean canProtect dans la structure locale
+
+09/01/12
+- Ajout : RaZ du tableau final de mouvements lors de la réception

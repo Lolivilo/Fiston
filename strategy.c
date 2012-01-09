@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "backgammon.h"
 #include "strategy.h"
+
 
 
 
@@ -9,7 +9,7 @@
 SGameState currentGameState;
 Strat_move potentialMoves[MAX_POTENTIAL_MOVES];
 int dies[5];	// | 0 si 2 des ; 1 sinon | de1 | de2 | de3 | de4 |
-SMove mov[4];
+SMove finaleMoves[4];
 
 
 void InitLibrary(char name[50])
@@ -49,7 +49,15 @@ int TakeDouble(const SGameState * const gameState)
 
 void MakeDecision(const SGameState * const gameState, SMove moves[4], unsigned int lastTimeError)
 {
-	currentGameState = *gameState;
+	currentGameState = *gameState;  // Copie locale de l etat courant du jeu
+    // RaZ du tableau de mouvements
+    int i = 0;
+    for(i = 0 ; i <= 4 ; i++)
+    {
+        moves->src_point = -1;
+        moves->dest_point = -1;
+    }
+    
 	// Remplissage du tableau de des
 	dies[1] = currentGameState.die1;
 	dies[2] = currentGameState.die2;
@@ -91,8 +99,8 @@ void ListPotentialMoves()
 	i = 0;
 
 	// Parcours de chaque zone
-	int zone;
-	for(zone = 0 ; zone <= 23 ; zone++)
+	EPosition zone;
+	for(zone = EPos_1 ; zone <= EPos_24 ; zone++)
 	{
 		// Si la zone courante nous appartient, on peut peut-etre effectuer un mouvement
 		if(currentGameState.zones[zone].player == EPlayer1 && currentGameState.zones[zone].nb_checkers > 0)
@@ -100,7 +108,7 @@ void ListPotentialMoves()
 			// De 1
 			if(dies[1] != -1)	// Si le de n est pas utilise
 			{
-				DEST(dies[1])  // Conditionnelle : teste si le point d arrivee est possible
+				IF_PLAYABLE(dies[1])  // Conditionnelle : teste si le point d arrivee est possible
 				{
 					potentialMoves[i].from = zone;
 					potentialMoves[i].to = zone + dies[1];
@@ -111,33 +119,33 @@ void ListPotentialMoves()
 			// De 2
 			if(dies[2] != -1 && dies[2] != dies[1])
 			{
-				DEST(dies[2])  // Conditionnelle : teste si le point d arrivee est possible
+				IF_PLAYABLE(dies[2])
 				{
 					potentialMoves[i].from = zone;
 					potentialMoves[i].to = zone + dies[2];
-					PriorityLevel(&potentialMoves[i]);	// Evaluation du mouvement tout juste ajoute
+					PriorityLevel(&potentialMoves[i]);
 					i++;
 				}
 			}
 			// De 3
 			if(dies[3] != -1 && dies[3] != dies[1] && dies[3] != dies[2])			// Il faut que le de existe et que la valeur le soit pas deja evaluee
 			{
-				DEST(dies[3])  // Conditionnelle : teste si le point d arrivee est possible
+				IF_PLAYABLE(dies[3])
                 {
 					potentialMoves[i].from = zone;
 					potentialMoves[i].to = zone + dies[3];
-					PriorityLevel(&potentialMoves[i]);	// Evaluation du mouvement tout juste ajoute
+					PriorityLevel(&potentialMoves[i]);
 					i++;
 				}
 			}
 			// De 4
 			if(dies[4] != -1 && dies[4] != dies[1] && dies[4] != dies[2] && dies[4] != dies[3])	// Il faut que le de existe et que la valeur le soit pas deja evaluee
 			{
-				DEST(dies[4])  // Conditionnelle : teste si le point d arrivee est possible
+				IF_PLAYABLE(dies[4])
 				{
 					potentialMoves[i].from = zone;
 					potentialMoves[i].to = zone + dies[4];
-					PriorityLevel(&potentialMoves[i]);	// Evaluation du mouvement tout juste ajoute
+					PriorityLevel(&potentialMoves[i]);
 					i++;
 				}
 			}
@@ -222,8 +230,10 @@ void ChooseMove()
         i = 1;
 	}
     // On copie le mouvement dans le tableau d envoi final
-    mov[0].src_point = potentialMoves[i-1].from;
-    mov[0].dest_point = potentialMoves[i-1].to;
+    int movIndex = 0;
+    while(mov
+    finalMoves[0].src_point = potentialMoves[i-1].from;
+    finalMoves[0].dest_point = potentialMoves[i-1].to;
     printf("Choix du mouvement %d -> %d\n", potentialMoves[i-1].from, potentialMoves[i-1].to);	// A ENLEVER PLUS TARD : AFFICHAGE DU MOUVEMENT CHOISI
     printf("Appel : UpdateAfterDecision(%d)\n", i-1);	// A ENLEVER PLUS TARD
 	// Appel de la fonction qui met a jour la liste des mouvements
