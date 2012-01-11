@@ -1,7 +1,6 @@
 #ifndef __STRATEGY__
 #define __STRATEGY__
 
-#define MAX_POTENTIAL_MOVES 100
 
 #include "backgammon.h"
 
@@ -30,7 +29,7 @@ void IsEligibleForRelease();
 void AnalysePlateau();
 void UpdateAfterDecision(int previousMoveIndex, int exitPrison);
 void PriorityLevel(Strat_move* move);
-void ChooseMove();
+void ChooseMove(int tabLength);
 EPosition FindSecuredAdvance();
 
 #endif

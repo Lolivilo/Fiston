@@ -6,9 +6,8 @@
 
 
 // Variables locales
-SGameState currentGameState;
-Strat_move potentialMoves[MAX_POTENTIAL_MOVES];
-Strat_move* potentialMoves2;
+SGameState currentGameState;    // Copie locale de l etat courant du jeu
+Strat_move* potentialMoves;     // Tableau de mouvements potentiels
 int dies[5];	// | nombre_de_des | de1 | de2 | de3 | de4 |
 SMove finalMoves[4];
 
@@ -82,21 +81,7 @@ void MakeDecision(const SGameState * const gameState, SMove moves[4], unsigned i
 void ListPotentialMoves()
 {
 	// Remise a zero du tableau de mouvements
-	int i;
-	for(i = 0 ; i < MAX_POTENTIAL_MOVES ; i++)
-	{
-		potentialMoves[i].from = -1;
-		potentialMoves[i].to = -1;
-		potentialMoves[i].canEat = 0;
-		potentialMoves[i].canMark = 0;
-        potentialMoves[i].canProtect = 0;
-        potentialMoves[i].isPrisonner = 0;
-        potentialMoves[i].priority = 0;
-	}
-    i = 0;
-    //potentialMoves2 = realloc(potentialMoves2, 0);  !!!!!!! PLUS TARD A FAIRE
-    
-    
+    potentialMoves = realloc(potentialMoves, 0);
     // Si un a un pion prisonnier, il faut le liberer avant toute chose
     if(currentGameState.zones[EPos_BarP1].nb_checkers > 0)
     {
@@ -105,7 +90,7 @@ void ListPotentialMoves()
     }
     else
     {
-    
+        int moveNumber = 0;
         // Parcours de chaque zone
         EPosition zone;
         for(zone = EPos_1 ; zone <= EPos_24 ; zone++)
@@ -118,13 +103,8 @@ void ListPotentialMoves()
                 {
                     IF_PLAYABLE(dies[1])  // Conditionnelle : teste si le point d arrivee est possible
                     {
-                        ///// !!!!! /////
-                        //FillPotentialMoves(zone, dies[1], i);
-                        ///// !!!!! /////
-                        potentialMoves[i].from = zone;
-                        potentialMoves[i].to = zone + dies[1];
-                        PriorityLevel(&potentialMoves[i]);	// Evaluation du mouvement tout juste ajoute
-                        i++;
+                        FillPotentialMoves(zone, dies[1], moveNumber);
+                        moveNumber++;
                     }
                 }
                 // De 2
@@ -132,13 +112,8 @@ void ListPotentialMoves()
                 {
                     IF_PLAYABLE(dies[2])
                     {
-                        ///// !!!!! /////
-                        //FillPotentialMoves(zone, dies[2], i);
-                        ///// !!!!! /////
-                        potentialMoves[i].from = zone;
-                        potentialMoves[i].to = zone + dies[2];
-                        PriorityLevel(&potentialMoves[i]);
-                        i++;
+                        FillPotentialMoves(zone, dies[2], moveNumber);
+                        moveNumber++;
                     }
                 }
                 // De 3
@@ -146,13 +121,8 @@ void ListPotentialMoves()
                 {
                     IF_PLAYABLE(dies[3])
                     {
-                        ///// !!!!! /////
-                        //FillPotentialMoves(zone, dies[3], i);
-                        ///// !!!!! /////
-                        potentialMoves[i].from = zone;
-                        potentialMoves[i].to = zone + dies[3];
-                        PriorityLevel(&potentialMoves[i]);
-                        i++;
+                        FillPotentialMoves(zone, dies[3], moveNumber);
+                        moveNumber++;
                     }
                 }
                 // De 4
@@ -160,25 +130,19 @@ void ListPotentialMoves()
                 {
                     IF_PLAYABLE(dies[4])
                     {
-                        ///// !!!!! /////
-                        //FillPotentialMoves(zone, dies[4], i);
-                        ///// !!!!! /////
-                        potentialMoves[i].from = zone;
-                        potentialMoves[i].to = zone + dies[4];
-                        PriorityLevel(&potentialMoves[i]);
-                        i++;
+                        FillPotentialMoves(zone, dies[4], moveNumber);
+                        moveNumber++;
                     }
                 }
             }
         }
         int j = 0;
-        while(potentialMoves[j].from != -1)
+        for(j = 0 ; j <= (moveNumber - 1) ; j++)
         {
             printf("MOUVEMENT %d : Depart de %d ; Arrivee de %d ; Mangeur?%d ; Marqueur?%d ; Protecteur?%d\n", j, potentialMoves[j].from, potentialMoves[j].to, potentialMoves[j].canEat, potentialMoves[j].canMark, potentialMoves[j].canProtect);
-            j++;
         }
         AnalysePlateau();
-        ChooseMove(potentialMoves);
+        ChooseMove(moveNumber - 1);
     }
 }
 
@@ -193,7 +157,8 @@ void ListPotentialMoves()
 void IsEligibleForRelease()
 {
     EPosition i = EPos_1;
-    int k = 0;
+    int moveNumber = 0;
+    int canPlay = 0;
     // On regarde si une zone est libre
     for(i = EPos_1 ; i < EPos_7 ; i++)
     {
@@ -208,23 +173,44 @@ void IsEligibleForRelease()
             {
                 if(dies[j] == (i + 1))
                 {
-                    potentialMoves[k].from = EPos_BarP1;
-                    potentialMoves[k].to = dies[j] - 1;
-                    potentialMoves[k].isPrisonner = 1;
-                    PriorityLevel(&potentialMoves[k]);
-                    k++;
-                    printf("Sortie %d sur %d ; Mangeur = %d ; Protecteur = %d\n", k, potentialMoves[k-1].to, potentialMoves[k-1].canEat, potentialMoves[k-1].canMark);
+                    canPlay = 1;
+                    FillPotentialMoves(i, dies[j], moveNumber);
+                    moveNumber++;
+                    printf("Sortie %d sur %d ; Mangeur = %d ; Protecteur = %d\n", moveNumber, potentialMoves[moveNumber-1].to, potentialMoves[moveNumber-1].canEat, potentialMoves[moveNumber-1].canMark);
                 }
             }
         }
     }
-    ChooseMove();
+    if(!(canPlay))  // Si on ne peut pas jouer, notre tour est termine
+    {
+        printf("TOUR TERMINE !!!!!\n");
+    }
+    else
+    {
+        ChooseMove(1);
+    }
 }
 
-void FillPotentialMoves(int start, int length, int moveNumber)
+void FillPotentialMoves(int start, int die, int moveNumber)
 {
     // Augmentation de la taille du tableau de 1
-    potentialMoves2 = (Strat_move*) realloc(potentialMoves2, (moveNumber+1) * sizeof(Strat_move));
+    potentialMoves = (Strat_move*) realloc(potentialMoves, (moveNumber+1) * sizeof(Strat_move));
+    potentialMoves[moveNumber].from = start;
+    if(start == 25) // Si le mouvement vient de la prison, l arrivee n est pas calculee de la meme facon
+    {
+        potentialMoves[moveNumber].to = die;
+        potentialMoves[moveNumber].isPrisonner = 1;
+    }
+    else
+    {
+        potentialMoves[moveNumber].to = start + die;
+        potentialMoves[moveNumber].isPrisonner = 0;
+    }
+    potentialMoves[moveNumber].canEat = 0;
+    potentialMoves[moveNumber].canMark = 0;
+    potentialMoves[moveNumber].canProtect = 0;
+    potentialMoves[moveNumber].priority = 0;
+    PriorityLevel(&potentialMoves[moveNumber]);
 }
 
 
@@ -271,8 +257,9 @@ void PriorityLevel(Strat_move* move)
   * Selectionne un mouvement dans le tableau de mouvements potentiels
   * @param Strat_move currentList[MAX_POTENTIAL_MOVES] : liste des mouvements potentiels
 **/
-void ChooseMove()
+void ChooseMove(int tabLength)
 {
+    printf("Appel de ChooseMove(%d)\n", tabLength);
     int i = 0;
 	int choosen = 0;
     int exitPrison = 0;
@@ -288,7 +275,7 @@ void ChooseMove()
     {
         int max = 0;
         int lastPriority = -1;
-        while(potentialMoves[i].from != -1)
+        while(i <= tabLength)
         {
             // On prend le mouvement avec la priorite maximale
             if(potentialMoves[i].priority > lastPriority)
@@ -304,9 +291,8 @@ void ChooseMove()
         exitPrison = 1;
     }
     
-    
     // Priorite 2 : Si on peut proteger un pion seul
-    while(potentialMoves[i].from != -1 && !(choosen))
+    while((i <= tabLength) && !(choosen))
 	{
 		// SELECTIONNER QUEL PION A MANGER SI PLUSIEURS
 		if(potentialMoves[i].canProtect)
@@ -318,10 +304,10 @@ void ChooseMove()
 
 	// Priorite 3 : Si mouvement permet de manger un pion adverse
 	if(!(choosen))
-    {
+    {   
         i = 0;
     }
-	while(potentialMoves[i].from != -1 && !(choosen))
+	while((i <= tabLength) && !(choosen))
 	{
 		// SELECTIONNER QUEL PION A MANGER SI PLUSIEURS
 		if(potentialMoves[i].canEat)
