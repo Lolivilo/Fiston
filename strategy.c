@@ -98,10 +98,9 @@ void ListPotentialMoves()
     
     
     // Si un a un pion prisonnier, il faut le liberer avant toute chose
-    printf("%d\n", currentGameState.zones[EPos_BarP1].nb_checkers);
     if(currentGameState.zones[EPos_BarP1].nb_checkers > 0)
     {
-        printf("TA DES PRISONNERS PATATE !!!\n");
+        printf("TA %d PRISONNERS PATATE !!!\n", currentGameState.zones[EPos_BarP1].nb_checkers);
         IsEligibleForRelease();
     }
     else
@@ -184,7 +183,13 @@ void ListPotentialMoves()
 }
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+/** void IsEligibleForRelease()
+  * Determine si un pion prisonnier peut etre libere
+  * Si oui, affecte un priorite a chaque mouvement de sortie possible
+**/
 void IsEligibleForRelease()
 {
     EPosition i = EPos_1;
@@ -204,10 +209,11 @@ void IsEligibleForRelease()
                 if(dies[j] == (i + 1))
                 {
                     potentialMoves[k].from = EPos_BarP1;
-                    potentialMoves[k].to = dies[j];
+                    potentialMoves[k].to = dies[j] - 1;
                     potentialMoves[k].isPrisonner = 1;
+                    PriorityLevel(&potentialMoves[k]);
                     k++;
-                    printf("Sortie %d sur %d\n", k, potentialMoves[k-1].to);
+                    printf("Sortie %d sur %d ; Mangeur = %d ; Protecteur = %d\n", k, potentialMoves[k-1].to, potentialMoves[k-1].canEat, potentialMoves[k-1].canMark);
                 }
             }
         }
@@ -332,7 +338,6 @@ void ChooseMove()
     finalMoves[0].src_point = potentialMoves[i-1].from;
     finalMoves[0].dest_point = potentialMoves[i-1].to;
     printf("Choix du mouvement %d -> %d\n", potentialMoves[i-1].from, potentialMoves[i-1].to);	// A ENLEVER PLUS TARD : AFFICHAGE DU MOUVEMENT CHOISI
-    printf("Appel : UpdateAfterDecision(%d)\n", i-1);	// A ENLEVER PLUS TARD
 	// Appel de la fonction qui met a jour la liste des mouvements
     if(!(choosen))
     {
@@ -355,13 +360,11 @@ void UpdateAfterDecision(int previousMoveIndex, int exitPrison)
 {
 	Strat_move lastMove = potentialMoves[previousMoveIndex];
 	// 1 : MaJ du GameState
-	printf("J'enlève un pion à la case %d\nJ'ajoute un pion à la case %d\n", lastMove.from, lastMove.to);	// A ENLEVER
 	currentGameState.zones[lastMove.from].nb_checkers--;
     if(lastMove.canEat != 1)    // On ne change pas le nombre de pion si on mange un ennemi (changement de couleur)
     {
         currentGameState.zones[lastMove.to].nb_checkers++;
     }
-    printf("Il reste %d pions sur la zone 0\n", currentGameState.zones[lastMove.from].nb_checkers); // A ENLEVER
 	currentGameState.zones[lastMove.to].player = EPlayer1;
 	// 2 : MaJ des des
     int found = 0;
@@ -370,7 +373,7 @@ void UpdateAfterDecision(int previousMoveIndex, int exitPrison)
     {
         if(exitPrison)
         {
-            if(dies[value] == (lastMove.to))
+            if(dies[value] == (lastMove.to + 1))
             {
                 found = 1;
                 dies[value] = -1;

@@ -15,11 +15,11 @@ int main()
 	plateau[1].player = EPlayer1;
 	plateau[1].nb_checkers = 0;
 	
-	plateau[2].player = EPlayer1;
-	plateau[2].nb_checkers = 0;
+	plateau[2].player = EPlayer2;
+	plateau[2].nb_checkers = 1;
 	
 	plateau[3].player = EPlayer2;
-	plateau[3].nb_checkers = 0;
+	plateau[3].nb_checkers = 1;
 	
 	plateau[4].player = EPlayer2;
 	plateau[4].nb_checkers = 0;
@@ -85,7 +85,7 @@ int main()
     plateau[24].nb_checkers = 0;
     
     plateau[25].player = EPlayer1;  // Prison
-    plateau[25].nb_checkers = 1;
+    plateau[25].nb_checkers = 2;
     
     
 	SGameState etat;
@@ -95,7 +95,7 @@ int main()
 		etat.zones[i] = plateau[i];
 	}
 	etat.die1 = 3;
-	etat.die2 = 3;
+	etat.die2 = 4;
 	etat.score = 0;
 	etat.scoreP2 = 0;
 	etat.stake = 0;
