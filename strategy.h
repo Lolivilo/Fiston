@@ -15,7 +15,7 @@
 typedef struct
 {
     EPosition from;		// Point de depart
-	EPosition to;			// Point d arrivee
+	EPosition to;		// Point d arrivee
 	int canEat;		// Possibilite de manger (booleen)
 	int canMark;	// Possibilite de marquer (booleen)
     int canProtect; // Possibilite de proteger (booleen)
@@ -23,6 +23,7 @@ typedef struct
 
 // Prototypes de fonctions
 void ListPotentialMoves();
+void FillPotentialMoves(int start, int length, int moveNumber);
 void UpdateAfterDecision(int previousMoveIndex);
 void PriorityLevel(Strat_move* move);
 void ChooseMove();

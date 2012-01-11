@@ -8,6 +8,7 @@
 // Variables locales
 SGameState currentGameState;
 Strat_move potentialMoves[MAX_POTENTIAL_MOVES];
+Strat_move* potentialMoves2;
 int dies[5];	// | nombre_de_des | de1 | de2 | de3 | de4 |
 SMove finalMoves[4];
 
@@ -50,14 +51,8 @@ int TakeDouble(const SGameState * const gameState)
 void MakeDecision(const SGameState * const gameState, SMove moves[4], unsigned int lastTimeError)
 {
 	currentGameState = *gameState;  // Copie locale de l etat courant du jeu
-    // RaZ du tableau de mouvements
-    int i = 0;
-    for(i = 0 ; i <= 4 ; i++)
-    {
-        moves->src_point = -1;
-        moves->dest_point = -1;
-    }
-    
+    // RaZ du tableau de mouvements A FAIRE !!!!!!!!!!
+
 	// Remplissage du tableau de des
 	dies[1] = currentGameState.die1;
 	dies[2] = currentGameState.die2;
@@ -96,8 +91,8 @@ void ListPotentialMoves()
 		potentialMoves[i].canMark = 0;
         potentialMoves[i].canProtect = 0;
 	}
-	i = 0;
-
+    i = 0;
+    //potentialMoves2 = realloc(potentialMoves2, 0);  !!!!!!! PLUS TARD A FAIRE
 	// Parcours de chaque zone
 	EPosition zone;
 	for(zone = EPos_1 ; zone <= EPos_24 ; zone++)
@@ -110,6 +105,9 @@ void ListPotentialMoves()
 			{
 				IF_PLAYABLE(dies[1])  // Conditionnelle : teste si le point d arrivee est possible
 				{
+                    ///// !!!!! /////
+                    //FillPotentialMoves(zone, dies[1], i);
+                    ///// !!!!! /////
 					potentialMoves[i].from = zone;
 					potentialMoves[i].to = zone + dies[1];
 					PriorityLevel(&potentialMoves[i]);	// Evaluation du mouvement tout juste ajoute
@@ -121,10 +119,14 @@ void ListPotentialMoves()
 			{
 				IF_PLAYABLE(dies[2])
 				{
+                    ///// !!!!! /////
+                    //FillPotentialMoves(zone, dies[2], i);
+                    ///// !!!!! /////
 					potentialMoves[i].from = zone;
 					potentialMoves[i].to = zone + dies[2];
 					PriorityLevel(&potentialMoves[i]);
 					i++;
+                    
 				}
 			}
 			// De 3
@@ -132,6 +134,9 @@ void ListPotentialMoves()
 			{
 				IF_PLAYABLE(dies[3])
                 {
+                    ///// !!!!! /////
+                    //FillPotentialMoves(zone, dies[3], i);
+                    ///// !!!!! /////
 					potentialMoves[i].from = zone;
 					potentialMoves[i].to = zone + dies[3];
 					PriorityLevel(&potentialMoves[i]);
@@ -143,6 +148,9 @@ void ListPotentialMoves()
 			{
 				IF_PLAYABLE(dies[4])
 				{
+                    ///// !!!!! /////
+                    //FillPotentialMoves(zone, dies[4], i);
+                    ///// !!!!! /////
 					potentialMoves[i].from = zone;
 					potentialMoves[i].to = zone + dies[4];
 					PriorityLevel(&potentialMoves[i]);
@@ -159,6 +167,15 @@ void ListPotentialMoves()
 	}
 	ChooseMove(potentialMoves);
 }
+
+
+
+void FillPotentialMoves(int start, int length, int moveNumber)
+{
+    // Augmentation de la taille du tableau de 1
+    potentialMoves2 = (Strat_move*) realloc(potentialMoves2, (moveNumber+1) * sizeof(Strat_move));
+}
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -202,8 +219,11 @@ void ChooseMove()
 	int choosen = 0;
     
     // Si deux mouvements permettent une avancee protegee (deux pions sur une zone), on joue ces mouvements
-    EPosition securedAdvanceDest = FindSecuredAdvance();
-    
+    /*EPosition securedAdvanceDest = FindSecuredAdvance();
+    if(securedAdvanceDest == EPos_24)
+    {
+        printf("LOOOOOL\n");
+    }*/
     
     // Priorite 1 : Si on peut proteger un pion seul
     while(potentialMoves[i].from != -1 && !(choosen))
@@ -293,6 +313,7 @@ void UpdateAfterDecision(int previousMoveIndex)
 
           
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 /** int FindSecuredAdvance()
   *
