@@ -93,87 +93,131 @@ void ListPotentialMoves()
 	}
     i = 0;
     //potentialMoves2 = realloc(potentialMoves2, 0);  !!!!!!! PLUS TARD A FAIRE
-	// Parcours de chaque zone
-	EPosition zone;
-	for(zone = EPos_1 ; zone <= EPos_24 ; zone++)
-	{
-		// Si la zone courante nous appartient, on peut peut-etre effectuer un mouvement
-		if(currentGameState.zones[zone].player == EPlayer1 && currentGameState.zones[zone].nb_checkers > 0)
-		{
-			// De 1
-			if(dies[1] != -1)	// Si le de n est pas utilise
-			{
-				IF_PLAYABLE(dies[1])  // Conditionnelle : teste si le point d arrivee est possible
-				{
-                    ///// !!!!! /////
-                    //FillPotentialMoves(zone, dies[1], i);
-                    ///// !!!!! /////
-					potentialMoves[i].from = zone;
-					potentialMoves[i].to = zone + dies[1];
-					PriorityLevel(&potentialMoves[i]);	// Evaluation du mouvement tout juste ajoute
-					i++;
-				}
-			}
-			// De 2
-			if(dies[2] != -1 && dies[2] != dies[1])
-			{
-				IF_PLAYABLE(dies[2])
-				{
-                    ///// !!!!! /////
-                    //FillPotentialMoves(zone, dies[2], i);
-                    ///// !!!!! /////
-					potentialMoves[i].from = zone;
-					potentialMoves[i].to = zone + dies[2];
-					PriorityLevel(&potentialMoves[i]);
-					i++;
-                    
-				}
-			}
-			// De 3
-			if(dies[3] != -1 && dies[3] != dies[1] && dies[3] != dies[2])			// Il faut que le de existe et que la valeur le soit pas deja evaluee
-			{
-				IF_PLAYABLE(dies[3])
+    
+    
+    // Si un a un pion prisonnier, il faut le liberer avant toute chose
+    printf("%d\n", currentGameState.zones[EPos_BarP1].nb_checkers);
+    if(currentGameState.zones[EPos_BarP1].nb_checkers > 0)
+    {
+        printf("TA DES PRISONNERS PATATE !!!\n");
+        IsEligibleForRelease();
+    }
+    else
+    {
+    
+        // Parcours de chaque zone
+        EPosition zone;
+        for(zone = EPos_1 ; zone <= EPos_24 ; zone++)
+        {
+            // Si la zone courante nous appartient, on peut peut-etre effectuer un mouvement
+            if(currentGameState.zones[zone].player == EPlayer1 && currentGameState.zones[zone].nb_checkers > 0)
+            {
+                // De 1
+                if(dies[1] != -1)	// Si le de n est pas utilise
                 {
-                    ///// !!!!! /////
-                    //FillPotentialMoves(zone, dies[3], i);
-                    ///// !!!!! /////
-					potentialMoves[i].from = zone;
-					potentialMoves[i].to = zone + dies[3];
-					PriorityLevel(&potentialMoves[i]);
-					i++;
-				}
-			}
-			// De 4
-			if(dies[4] != -1 && dies[4] != dies[1] && dies[4] != dies[2] && dies[4] != dies[3])	// Il faut que le de existe et que la valeur le soit pas deja evaluee
-			{
-				IF_PLAYABLE(dies[4])
-				{
-                    ///// !!!!! /////
-                    //FillPotentialMoves(zone, dies[4], i);
-                    ///// !!!!! /////
-					potentialMoves[i].from = zone;
-					potentialMoves[i].to = zone + dies[4];
-					PriorityLevel(&potentialMoves[i]);
-					i++;
-				}
-			}
-		}
-	}
-	int j = 0;
-	while(potentialMoves[j].from != -1)
-	{
-		printf("MOUVEMENT %d : Depart de %d ; Arrivee de %d ; Mangeur?%d ; Marqueur?%d ; Protecteur?%d\n", j, potentialMoves[j].from, potentialMoves[j].to, potentialMoves[j].canEat, potentialMoves[j].canMark, potentialMoves[j].canProtect);
-		j++;
-	}
-	ChooseMove(potentialMoves);
+                    IF_PLAYABLE(dies[1])  // Conditionnelle : teste si le point d arrivee est possible
+                    {
+                        ///// !!!!! /////
+                        //FillPotentialMoves(zone, dies[1], i);
+                        ///// !!!!! /////
+                        potentialMoves[i].from = zone;
+                        potentialMoves[i].to = zone + dies[1];
+                        PriorityLevel(&potentialMoves[i]);	// Evaluation du mouvement tout juste ajoute
+                        i++;
+                    }
+                }
+                // De 2
+                if(dies[2] != -1 && dies[2] != dies[1])
+                {
+                    IF_PLAYABLE(dies[2])
+                    {
+                        ///// !!!!! /////
+                        //FillPotentialMoves(zone, dies[2], i);
+                        ///// !!!!! /////
+                        potentialMoves[i].from = zone;
+                        potentialMoves[i].to = zone + dies[2];
+                        PriorityLevel(&potentialMoves[i]);
+                        i++;
+                    }
+                }
+                // De 3
+                if(dies[3] != -1 && dies[3] != dies[1] && dies[3] != dies[2])			// Il faut que le de existe et que la valeur le soit pas deja evaluee
+                {
+                    IF_PLAYABLE(dies[3])
+                    {
+                        ///// !!!!! /////
+                        //FillPotentialMoves(zone, dies[3], i);
+                        ///// !!!!! /////
+                        potentialMoves[i].from = zone;
+                        potentialMoves[i].to = zone + dies[3];
+                        PriorityLevel(&potentialMoves[i]);
+                        i++;
+                    }
+                }
+                // De 4
+                if(dies[4] != -1 && dies[4] != dies[1] && dies[4] != dies[2] && dies[4] != dies[3])	// Il faut que le de existe et que la valeur le soit pas deja evaluee
+                {
+                    IF_PLAYABLE(dies[4])
+                    {
+                        ///// !!!!! /////
+                        //FillPotentialMoves(zone, dies[4], i);
+                        ///// !!!!! /////
+                        potentialMoves[i].from = zone;
+                        potentialMoves[i].to = zone + dies[4];
+                        PriorityLevel(&potentialMoves[i]);
+                        i++;
+                    }
+                }
+            }
+        }
+        int j = 0;
+        while(potentialMoves[j].from != -1)
+        {
+            printf("MOUVEMENT %d : Depart de %d ; Arrivee de %d ; Mangeur?%d ; Marqueur?%d ; Protecteur?%d\n", j, potentialMoves[j].from, potentialMoves[j].to, potentialMoves[j].canEat, potentialMoves[j].canMark, potentialMoves[j].canProtect);
+            j++;
+        }
+        AnalysePlateau();
+        ChooseMove(potentialMoves);
+    }
 }
 
 
+
+void IsEligibleForRelease()
+{
+    EPosition i = EPos_1;
+    // On regarde si une zone est libre
+    for(i = EPos_1 ; i < EPos_7 ; i++)
+    {
+        if(currentGameState.zones[i].nb_checkers == 0       // Soit aucun pion
+        || currentGameState.zones[i].player == EPlayer1     // Soit on est prioprietaire
+        || (currentGameState.zones[i].player == EPlayer2    // Soit il y a un pion adverse isole
+            && currentGameState.zones[i].nb_checkers <= 1))
+        {
+            // Si oui, on regarde si un de permet d y aller
+            int j = 0;
+            for(j = 1 ; j < 5 ; j++)
+            {
+                if(dies[j] == (i + 1))
+                {
+                    printf("SORTIE POSSIBLE !!!!!! Case %d vide !!!!!\n", i + 1);
+                }
+            }
+        }
+    }
+}
 
 void FillPotentialMoves(int start, int length, int moveNumber)
 {
     // Augmentation de la taille du tableau de 1
     potentialMoves2 = (Strat_move*) realloc(potentialMoves2, (moveNumber+1) * sizeof(Strat_move));
+}
+
+
+void AnalysePlateau()
+{
+    // Analyse du plateau pour voir si on a un pion seul
+    //int zone;
 }
 
 
@@ -322,5 +366,6 @@ void UpdateAfterDecision(int previousMoveIndex)
 **/
 EPosition FindSecuredAdvance()
 {
+    
     return EPos_1;
 }

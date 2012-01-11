@@ -24,6 +24,8 @@ typedef struct
 // Prototypes de fonctions
 void ListPotentialMoves();
 void FillPotentialMoves(int start, int length, int moveNumber);
+void IsEligibleForRelease();
+void AnalysePlateau();
 void UpdateAfterDecision(int previousMoveIndex);
 void PriorityLevel(Strat_move* move);
 void ChooseMove();
