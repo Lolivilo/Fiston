@@ -90,6 +90,8 @@ void ListPotentialMoves()
 		potentialMoves[i].canEat = 0;
 		potentialMoves[i].canMark = 0;
         potentialMoves[i].canProtect = 0;
+        potentialMoves[i].isPrisonner = 0;
+        potentialMoves[i].priority = 0;
 	}
     i = 0;
     //potentialMoves2 = realloc(potentialMoves2, 0);  !!!!!!! PLUS TARD A FAIRE
@@ -186,6 +188,7 @@ void ListPotentialMoves()
 void IsEligibleForRelease()
 {
     EPosition i = EPos_1;
+    int k = 0;
     // On regarde si une zone est libre
     for(i = EPos_1 ; i < EPos_7 ; i++)
     {
@@ -200,11 +203,16 @@ void IsEligibleForRelease()
             {
                 if(dies[j] == (i + 1))
                 {
-                    printf("SORTIE POSSIBLE !!!!!! Case %d vide !!!!!\n", i + 1);
+                    potentialMoves[k].from = EPos_BarP1;
+                    potentialMoves[k].to = dies[j];
+                    potentialMoves[k].isPrisonner = 1;
+                    k++;
+                    printf("Sortie %d sur %d\n", k, potentialMoves[k-1].to);
                 }
             }
         }
     }
+    ChooseMove();
 }
 
 void FillPotentialMoves(int start, int length, int moveNumber)
@@ -261,7 +269,7 @@ void ChooseMove()
 {
     int i = 0;
 	int choosen = 0;
-    
+    int exitPrison = 0;
     // Si deux mouvements permettent une avancee protegee (deux pions sur une zone), on joue ces mouvements
     /*EPosition securedAdvanceDest = FindSecuredAdvance();
     if(securedAdvanceDest == EPos_24)
@@ -269,7 +277,29 @@ void ChooseMove()
         printf("LOOOOOL\n");
     }*/
     
-    // Priorite 1 : Si on peut proteger un pion seul
+    // Priorite 1 : Si on a des prisonniers
+    if(potentialMoves[0].isPrisonner)
+    {
+        int max = 0;
+        int lastPriority = -1;
+        while(potentialMoves[i].from != -1)
+        {
+            // On prend le mouvement avec la priorite maximale
+            if(potentialMoves[i].priority > lastPriority)
+            {
+                lastPriority = potentialMoves[i].priority;
+                max = i;
+            }
+            i++;
+        }
+        finalMoves[0].src_point = potentialMoves[i-1].from;
+        finalMoves[0].dest_point = potentialMoves[i-1].to;
+        choosen = 1;
+        exitPrison = 1;
+    }
+    
+    
+    // Priorite 2 : Si on peut proteger un pion seul
     while(potentialMoves[i].from != -1 && !(choosen))
 	{
 		// SELECTIONNER QUEL PION A MANGER SI PLUSIEURS
@@ -280,7 +310,7 @@ void ChooseMove()
 		i++;
 	}
 
-	// Priorite 2 : Si mouvement permet de manger un pion adverse
+	// Priorite 3 : Si mouvement permet de manger un pion adverse
 	if(!(choosen))
     {
         i = 0;
@@ -306,11 +336,11 @@ void ChooseMove()
 	// Appel de la fonction qui met a jour la liste des mouvements
     if(!(choosen))
     {
-        UpdateAfterDecision(0);
+        UpdateAfterDecision(0, exitPrison);
     }
     else
     {
-        UpdateAfterDecision(i-1);
+        UpdateAfterDecision(i-1, exitPrison);
     }
 }
 
@@ -319,8 +349,9 @@ void ChooseMove()
     * Met a jour la liste des mouvements potentiels de la strategie apres la choix d un premier mouvement
     * ainsi que l etat courant du plateau
     * @param previousMoveIndex : la position, dans la liste, mouvement precedemment effectue
+    * @param exitPrison : indique si le mouvement choisit est une sortie de prison
 **/
-void UpdateAfterDecision(int previousMoveIndex)
+void UpdateAfterDecision(int previousMoveIndex, int exitPrison)
 {
 	Strat_move lastMove = potentialMoves[previousMoveIndex];
 	// 1 : MaJ du GameState
@@ -337,7 +368,16 @@ void UpdateAfterDecision(int previousMoveIndex)
     int value = 1;
     while(!(found))
     {
-        if(dies[value] == (lastMove.to - lastMove.from))
+        if(exitPrison)
+        {
+            if(dies[value] == (lastMove.to))
+            {
+                found = 1;
+                dies[value] = -1;
+                dies[0]--;
+            }
+        }
+        else if(dies[value] == (lastMove.to - lastMove.from))
         {
             found = 1;
             dies[value] = -1;

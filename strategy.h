@@ -19,6 +19,8 @@ typedef struct
 	int canEat;		// Possibilite de manger (booleen)
 	int canMark;	// Possibilite de marquer (booleen)
     int canProtect; // Possibilite de proteger (booleen)
+    int isPrisonner;
+    int priority;
 } Strat_move;
 
 // Prototypes de fonctions
@@ -26,7 +28,7 @@ void ListPotentialMoves();
 void FillPotentialMoves(int start, int length, int moveNumber);
 void IsEligibleForRelease();
 void AnalysePlateau();
-void UpdateAfterDecision(int previousMoveIndex);
+void UpdateAfterDecision(int previousMoveIndex, int exitPrison);
 void PriorityLevel(Strat_move* move);
 void ChooseMove();
 EPosition FindSecuredAdvance();
