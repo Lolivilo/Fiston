@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "backgammon.h"
 #include "strategy.h"
 
 

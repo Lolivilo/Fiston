@@ -2,7 +2,15 @@
 #include <stdlib.h>
 #include "strategy.h"
 
-
+// Soit on sort du plateau
+// Soit on arrive sur une zone a nous
+// Soit la zone est vide
+// Soit elle est adverse avec un seul pion
+#define IF_PLAYABLE(de) if((((int)zone-de) >= 0) \
+                        || (currentGameState.zones[zone - de].player == EPlayer1) \
+                        || (currentGameState.zones[zone - de].nb_checkers == 0)	\
+                        || (currentGameState.zones[zone - de].player == EPlayer2 \
+                            && currentGameState.zones[zone - de].nb_checkers == 1)) \
 
 
 // Variables locales
@@ -93,7 +101,7 @@ void ListPotentialMoves()
         int moveNumber = 0;
         // Parcours de chaque zone
         EPosition zone;
-        for(zone = EPos_1 ; zone <= EPos_24 ; zone++)
+        for(zone = EPos_24 ; zone >= EPos_1 ; zone--)
         {
             // Si la zone courante nous appartient, on peut peut-etre effectuer un mouvement
             if(currentGameState.zones[zone].player == EPlayer1 && currentGameState.zones[zone].nb_checkers > 0)
@@ -191,20 +199,28 @@ void IsEligibleForRelease()
     }
 }
 
-void FillPotentialMoves(int start, int die, int moveNumber)
+void FillPotentialMoves(EPosition start, int die, int moveNumber)
 {
     // Augmentation de la taille du tableau de 1
     potentialMoves = (Strat_move*) realloc(potentialMoves, (moveNumber+1) * sizeof(Strat_move));
     potentialMoves[moveNumber].from = start;
-    if(start == 25) // Si le mouvement vient de la prison, l arrivee n est pas calculee de la meme facon
+    if(start == EPos_BarP1) // Si le mouvement vient de la prison, l arrivee n est pas calculee de la meme facon
     {
-        potentialMoves[moveNumber].to = die;
+        potentialMoves[moveNumber].to = 24 - die;
         potentialMoves[moveNumber].isPrisonner = 1;
     }
     else
     {
-        potentialMoves[moveNumber].to = start + die;
-        potentialMoves[moveNumber].isPrisonner = 0;
+        if((int)(start - die) < 0)
+        {
+            potentialMoves[moveNumber].to = EPos_OutP1;
+            potentialMoves[moveNumber].isPrisonner = 0;
+        }
+        else
+        {
+            potentialMoves[moveNumber].to = start - die;
+            potentialMoves[moveNumber].isPrisonner = 0;
+        }
     }
     potentialMoves[moveNumber].canEat = 0;
     potentialMoves[moveNumber].canMark = 0;
@@ -241,7 +257,7 @@ void PriorityLevel(Strat_move* move)
 	{
 		move->canEat = 1;
 	}
-	if(move->to > 23)
+	if(move->to == EPos_OutP1)
 	{
 		move->canMark = 1;
 	}
@@ -359,14 +375,14 @@ void UpdateAfterDecision(int previousMoveIndex, int exitPrison)
     {
         if(exitPrison)
         {
-            if(dies[value] == (lastMove.to + 1))
+            if(dies[value] == (24 - lastMove.to))
             {
                 found = 1;
                 dies[value] = -1;
                 dies[0]--;
             }
         }
-        else if(dies[value] == (lastMove.to - lastMove.from))
+        else if(dies[value] == (lastMove.from - lastMove.to))
         {
             found = 1;
             dies[value] = -1;

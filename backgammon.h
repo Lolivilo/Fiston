@@ -1,7 +1,4 @@
-#ifndef __BACK__
-#define __BACK__
-
-////////// Strutures à utiliser
+/////////// Strutures à utiliser
 
 // Représente un joueur
 typedef enum
@@ -20,6 +17,7 @@ typedef struct
 // Enumeration des zones pour le tableau points
 typedef enum
 {
+	EPos_nopos=-1,
 	EPos_1=0,
 	EPos_2,
 	EPos_3,
@@ -89,19 +87,19 @@ typedef void (*pfStartMatch)(const unsigned int);
 /**
  * Initialiser l'IA pour une manche (d'un match)
  */
-//void StartGame();
+void StartGame();
 typedef void (*pfStartGame)();
 
 /**
  * Fin d'une manche (d'un match)
  */
-//void EndGame();
+void EndGame();
 typedef void (*pfEndGame)();
 
 /**
  * Fin d'un match
  */
-//void EndMatch();
+void EndMatch();
 typedef void (*pfEndMatch)();
 
 /**
@@ -111,7 +109,7 @@ typedef void (*pfEndMatch)();
  * @return int
  *	vrai si on propose de doubler : faux sinon
  */
-//int DoubleStack(const SGameState * const gameState);
+int DoubleStack(const SGameState * const gameState);
 typedef int (*pfDoubleStack)(const SGameState * const);
 
 /**
@@ -121,7 +119,7 @@ typedef int (*pfDoubleStack)(const SGameState * const);
  * @return int
  *	vrai si on accepte la nouvelle mise ; faux sinon
  */
-//int TakeDouble(const SGameState * const gameState);
+int TakeDouble(const SGameState * const gameState);
 typedef int (*pfTakeDouble)(const SGameState * const);
 
 /**
@@ -135,6 +133,3 @@ typedef int (*pfTakeDouble)(const SGameState * const);
  */
 void MakeDecision(const SGameState * const gameState, SMove moves[4], unsigned int lastTimeError);
 typedef void (*pfMakeDecision)(const SGameState * const, SMove[4], unsigned int);
-
-
-#endif
