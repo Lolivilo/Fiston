@@ -6,11 +6,10 @@
 // Soit on arrive sur une zone a nous
 // Soit la zone est vide
 // Soit elle est adverse avec un seul pion
-#define IF_PLAYABLE(de) if((((int)zone-de) >= 0) \
+#define IF_PLAYABLE(de) if( (((int)zone-de) <= 0) \
                         || (currentGameState.zones[zone - de].player == EPlayer1) \
                         || (currentGameState.zones[zone - de].nb_checkers == 0)	\
-                        || (currentGameState.zones[zone - de].player == EPlayer2 \
-                            && currentGameState.zones[zone - de].nb_checkers == 1)) \
+                        || (currentGameState.zones[zone - de].player == EPlayer2 && currentGameState.zones[zone - de].nb_checkers == 1)) \
 
 
 // Variables locales
