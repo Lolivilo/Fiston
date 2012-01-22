@@ -57,8 +57,13 @@ int TakeDouble(const SGameState * const gameState)
 void MakeDecision(const SGameState * const gameState, SMove moves[4], unsigned int lastTimeError)
 {
 	currentGameState = *gameState;  // Copie locale de l etat courant du jeu
-    // RaZ du tableau de mouvements A FAIRE !!!!!!!!!!
-
+    // RaZ du tableau de mouvements
+    int i = 0;
+    for(i = 0 ; i < 4; i++)
+    {
+        moves[i].src_point = EPos_nopos;
+        moves[i].dest_point = EPos_nopos;
+    }
 	// Remplissage du tableau de des
 	dies[1] = currentGameState.die1;
 	dies[2] = currentGameState.die2;

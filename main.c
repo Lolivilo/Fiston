@@ -18,7 +18,7 @@ int main()
 	plateau[2].nb_checkers = 0;
 	
 	plateau[3].player = EPlayer2;
-	plateau[3].nb_checkers = 1;
+	plateau[3].nb_checkers = 0;
 	
 	plateau[4].player = EPlayer2;
 	plateau[4].nb_checkers = 0;
@@ -47,8 +47,8 @@ int main()
 	plateau[12].player = EPlayer2;
 	plateau[12].nb_checkers = 5;
 
-	plateau[13].player = EPlayer1;
-	plateau[13].nb_checkers = 0;
+	plateau[13].player = EPlayer2;
+	plateau[13].nb_checkers = 1;
 
 	plateau[14].player = EPlayer1;
 	plateau[14].nb_checkers = 0;
@@ -99,6 +99,14 @@ int main()
 	etat.scoreP2 = 0;
 	etat.stake = 0;
 	
-	MakeDecision(&etat, NULL, 0);
+    SMove moves[4];
+    int j = 0;
+    for(j = 0 ; j < 4; j++)
+    {
+        moves[j].src_point = EPos_1;
+        moves[j].dest_point = EPos_1;
+    }
+	MakeDecision(&etat, moves, 0);
+    
 	return 0;
 }
