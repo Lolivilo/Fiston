@@ -168,28 +168,22 @@ void ListPotentialMoves()
 **/
 void IsEligibleForRelease()
 {
-    EPosition i = EPos_1;
-    int moveNumber = 0;
     int canPlay = 0;
-    // On regarde si une zone est libre
-    for(i = EPos_1 ; i < EPos_7 ; i++)
+    int moveNumber = 0;
+    int nbdies;
+    for(nbdies = 1 ; nbdies <= 4 ; nbdies++)  // Parcours des des
     {
-        if(currentGameState.zones[i].nb_checkers == 0       // Soit aucun pion
-        || currentGameState.zones[i].player == EPlayer1     // Soit on est prioprietaire
-        || (currentGameState.zones[i].player == EPlayer2    // Soit il y a un pion adverse isole
-            && currentGameState.zones[i].nb_checkers <= 1))
+        if(dies[nbdies] != -1 && dies[nbdies] != dies[nbdies - 1])
         {
-            // Si oui, on regarde si un de permet d y aller
-            int j = 0;
-            for(j = 1 ; j < 5 ; j++)
+            SZone potExit = currentGameState.zones[24 - dies[nbdies]];  // sortie potenielle testee
+            if(potExit.nb_checkers == 0                                 // Si aucun pion
+            || potExit.player == EPlayer1                               // OU si zone a nous
+            || (potExit.player == EPlayer2 && potExit.nb_checkers <= 1))// OU zone adverse a 1 pion
             {
-                if(dies[j] == (i + 1))
-                {
-                    canPlay = 1;
-                    FillPotentialMoves(i, dies[j], moveNumber);
-                    moveNumber++;
-                    printf("Sortie %d sur %d ; Mangeur = %d ; Protecteur = %d\n", moveNumber, potentialMoves[moveNumber-1].to, potentialMoves[moveNumber-1].canEat, potentialMoves[moveNumber-1].canMark);
-                }
+                canPlay = 1;
+                FillPotentialMoves(EPos_BarP1, dies[nbdies], moveNumber);
+                moveNumber++;
+                printf("Sortie %d sur %d ; Mangeur = %d ; Protecteur = %d\n", moveNumber, potentialMoves[moveNumber-1].to, potentialMoves[moveNumber-1].canEat, potentialMoves[moveNumber-1].canMark);
             }
         }
     }
@@ -199,7 +193,7 @@ void IsEligibleForRelease()
     }
     else
     {
-        ChooseMove(1);
+        ChooseMove(moveNumber - 1);
     }
 }
 
@@ -291,7 +285,7 @@ void ChooseMove(int tabLength)
     }*/
     
     // Priorite 1 : Si on a des prisonniers
-    if(potentialMoves[0].isPrisonner)
+    if(potentialMoves[0].isPrisonner)   // S il y a des prisonniers, seuls eux sont listes donc pas besoin de parcourir la liste
     {
         int max = 0;
         int lastPriority = -1;
@@ -395,7 +389,7 @@ void UpdateAfterDecision(int previousMoveIndex, int exitPrison)
         value++;
     }
     //A SUPPRIMER : AFFICHAGE DE LA LISTE DES DES APRES UN CHOIX
-	printf("DES : | %d | %d | %d | %d |\n", dies[1], dies[2], dies[3], dies[4]);
+	printf("DES : %d ||| %d | %d | %d | %d |\n", dies[0], dies[1], dies[2], dies[3], dies[4]);
 	// 3 : On recomment l evaluation du plateau seulement s il reste des des
 	//if(!(dies[1] == -1 && dies[2] == -1 && dies[3] == -1 && dies[4] == -1 ))
     if(dies[0] > 0)

@@ -84,7 +84,7 @@ int main()
     plateau[24].nb_checkers = 0;
     
     plateau[25].player = EPlayer1;  // Prison
-    plateau[25].nb_checkers = 0;
+    plateau[25].nb_checkers = 4;
     
     
 	SGameState etat;
@@ -93,8 +93,8 @@ int main()
 	{
 		etat.zones[i] = plateau[i];
 	}
-	etat.die1 = 3;
-	etat.die2 = 4;
+	etat.die1 = 1;
+	etat.die2 = 1;
 	etat.score = 0;
 	etat.scoreP2 = 0;
 	etat.stake = 0;
