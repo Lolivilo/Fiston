@@ -84,7 +84,7 @@ int main()
     plateau[24].nb_checkers = 0;
     
     plateau[25].player = EPlayer1;  // Prison
-    plateau[25].nb_checkers = 4;
+    plateau[25].nb_checkers = 1;
     
     
 	SGameState etat;
@@ -93,13 +93,14 @@ int main()
 	{
 		etat.zones[i] = plateau[i];
 	}
-	etat.die1 = 1;
-	etat.die2 = 1;
+	etat.die1 = 3;
+	etat.die2 = 2;
 	etat.score = 0;
 	etat.scoreP2 = 0;
 	etat.stake = 0;
 	
     SMove moves[4];
+    
     int j = 0;
     for(j = 0 ; j < 4; j++)
     {

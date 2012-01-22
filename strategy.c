@@ -171,13 +171,13 @@ void IsEligibleForRelease()
     int canPlay = 0;
     int moveNumber = 0;
     int nbdies;
-    for(nbdies = 1 ; nbdies <= 4 ; nbdies++)  // Parcours des des
+    for(nbdies = 1 ; nbdies <= 4 ; nbdies++ )  // Parcours des des
     {
-        if(dies[nbdies] != -1 && dies[nbdies] != dies[nbdies - 1])
+        if( (dies[nbdies] != -1) && (nbdies < 2 || ((nbdies >= 2) && (dies[nbdies] != dies[nbdies - 1]))) )
         {
             SZone potExit = currentGameState.zones[24 - dies[nbdies]];  // sortie potenielle testee
-            if(potExit.nb_checkers == 0                                 // Si aucun pion
-            || potExit.player == EPlayer1                               // OU si zone a nous
+            if((potExit.nb_checkers == 0)                               // Si aucun pion
+            || (potExit.player == EPlayer1)                             // OU si zone a nous
             || (potExit.player == EPlayer2 && potExit.nb_checkers <= 1))// OU zone adverse a 1 pion
             {
                 canPlay = 1;
