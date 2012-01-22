@@ -57,6 +57,7 @@ int TakeDouble(const SGameState * const gameState)
 void MakeDecision(const SGameState * const gameState, SMove moves[4], unsigned int lastTimeError)
 {
 	currentGameState = *gameState;  // Copie locale de l etat courant du jeu
+
     // RaZ du tableau de mouvements
     int i = 0;
     for(i = 0 ; i < 4; i++)
@@ -64,6 +65,7 @@ void MakeDecision(const SGameState * const gameState, SMove moves[4], unsigned i
         moves[i].src_point = EPos_nopos;
         moves[i].dest_point = EPos_nopos;
     }
+    
 	// Remplissage du tableau de des
 	dies[1] = currentGameState.die1;
 	dies[2] = currentGameState.die2;
@@ -81,6 +83,7 @@ void MakeDecision(const SGameState * const gameState, SMove moves[4], unsigned i
 	}
 	printf("DES INITIAUX : | %d | %d | %d | %d |\n", dies[1], dies[2], dies[3], dies[4]);	
 	ListPotentialMoves();
+    
 }
 
 
@@ -183,13 +186,13 @@ void IsEligibleForRelease()
                 canPlay = 1;
                 FillPotentialMoves(EPos_BarP1, dies[nbdies], moveNumber);
                 moveNumber++;
-                printf("Sortie %d sur %d ; Mangeur = %d ; Protecteur = %d\n", moveNumber, potentialMoves[moveNumber-1].to, potentialMoves[moveNumber-1].canEat, potentialMoves[moveNumber-1].canMark);
+                printf("Sortie n°%d sur %d ; priorite de %d\n", moveNumber, potentialMoves[moveNumber-1].to, potentialMoves[moveNumber-1].priority);
             }
         }
     }
     if(!(canPlay))  // Si on ne peut pas jouer, notre tour est termine
     {
-        printf("TOUR TERMINE !!!!!\n");
+        FinalReturn(NULL);
     }
     else
     {
@@ -202,29 +205,29 @@ void FillPotentialMoves(EPosition start, int die, int moveNumber)
     // Augmentation de la taille du tableau de 1
     potentialMoves = (Strat_move*) realloc(potentialMoves, (moveNumber+1) * sizeof(Strat_move));
     potentialMoves[moveNumber].from = start;
-    if(start == EPos_BarP1) // Si le mouvement vient de la prison, l arrivee n est pas calculee de la meme facon
-    {
-        potentialMoves[moveNumber].to = 24 - die;
-        potentialMoves[moveNumber].isPrisonner = 1;
-    }
-    else
-    {
-        if((int)(start - die) < 0)
-        {
-            potentialMoves[moveNumber].to = EPos_OutP1;
-            potentialMoves[moveNumber].isPrisonner = 0;
-        }
-        else
-        {
-            potentialMoves[moveNumber].to = start - die;
-            potentialMoves[moveNumber].isPrisonner = 0;
-        }
-    }
     potentialMoves[moveNumber].canEat = 0;
     potentialMoves[moveNumber].canMark = 0;
     potentialMoves[moveNumber].canProtect = 0;
     potentialMoves[moveNumber].priority = 0;
-    PriorityLevel(&potentialMoves[moveNumber]);
+    potentialMoves[moveNumber].isPrisonner = 0;
+    if(start == EPos_BarP1) // Si le mouvement vient de la prison, l arrivee n est pas calculee de la meme facon
+    {
+        potentialMoves[moveNumber].to = 24 - die;
+        potentialMoves[moveNumber].isPrisonner = 1;
+        EvaluateToExit(&potentialMoves[moveNumber]);
+    }
+    else
+    {
+        if((int)(start - die) < 0)                      // Sortie pour marquer
+        {
+            potentialMoves[moveNumber].to = EPos_OutP1;
+        }
+        else                                            // Mouvement normal
+        {
+            potentialMoves[moveNumber].to = start - die;
+        }
+        PriorityLevel(&potentialMoves[moveNumber]);
+    }
 }
 
 
@@ -260,6 +263,38 @@ void PriorityLevel(Strat_move* move)
 		move->canMark = 1;
 	}
 }
+    
+    
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+/** EvaluateToExit()
+  * Evalue chaque mouvement de sortie de prison et modifie la priorite de chacun
+  * Priorite 1 : Si on peut manger un pion                      => 4
+  * Priorite 2 : Si on peut protéger un de nos pions seuls      => 3
+  * Priorite 3 : Si on peut aller sur une zone nous appartenant => 2
+  * Priorite 4 : Si aucune autre solution                       => 1
+**/
+void EvaluateToExit(Strat_move* move)
+{
+    SZone exit = currentGameState.zones[move->to];
+    if( (exit.player == EPlayer2) && (exit.nb_checkers == 1) )
+    {
+        move->priority = 4;
+    }
+    else if( (exit.player == EPlayer1) && (exit.nb_checkers == 1) )
+    {
+        move->priority = 3;
+    }
+    else if( (exit.player == EPlayer1) && (exit.nb_checkers > 1) )
+    {
+        move->priority = 2;
+    }
+    else
+    {
+        move->priority = 1;
+    }
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -273,7 +308,6 @@ void PriorityLevel(Strat_move* move)
 **/
 void ChooseMove(int tabLength)
 {
-    printf("Appel de ChooseMove(%d)\n", tabLength);
     int i = 0;
 	int choosen = 0;
     int exitPrison = 0;
@@ -299,45 +333,47 @@ void ChooseMove(int tabLength)
             }
             i++;
         }
-        finalMoves[0].src_point = potentialMoves[i-1].from;
-        finalMoves[0].dest_point = potentialMoves[i-1].to;
+        finalMoves[0].src_point = potentialMoves[max].from;
+        finalMoves[0].dest_point = potentialMoves[max].to;
         choosen = 1;
         exitPrison = 1;
     }
-    
-    // Priorite 2 : Si on peut proteger un pion seul
-    while((i <= tabLength) && !(choosen))
-	{
-		// SELECTIONNER QUEL PION A MANGER SI PLUSIEURS
-		if(potentialMoves[i].canProtect)
-		{
-			choosen = 1;
-		}
-		i++;
-	}
+    else
+    {
+        // Priorite 2 : Si on peut proteger un pion seul
+        while((i <= tabLength) && !(choosen))
+        {
+            // SELECTIONNER QUEL PION A MANGER SI PLUSIEURS
+            if(potentialMoves[i].canProtect)
+            {
+                choosen = 1;
+            }
+            i++;
+        }
 
-	// Priorite 3 : Si mouvement permet de manger un pion adverse
-	if(!(choosen))
-    {   
-        i = 0;
+        // Priorite 3 : Si mouvement permet de manger un pion adverse
+        if(!(choosen))
+        {
+            i = 0;
+        }
+        while((i <= tabLength) && !(choosen))
+        {
+            // SELECTIONNER QUEL PION A MANGER SI PLUSIEURS
+            if(potentialMoves[i].canEat)
+            {
+                choosen = 1;
+            }
+            i++;
+        }
+        if(!(choosen))	// A ENLEVER PLUS TARD : SI AUCUN CHOIX, ON PREND LE PREMIER MOUVEMENT
+        {
+            i = 1;
+        }
+        // On copie le mouvement dans le tableau d envoi final
+        finalMoves[0].src_point = potentialMoves[i-1].from;
+        finalMoves[0].dest_point = potentialMoves[i-1].to;
     }
-	while((i <= tabLength) && !(choosen))
-	{
-		// SELECTIONNER QUEL PION A MANGER SI PLUSIEURS
-		if(potentialMoves[i].canEat)
-		{
-			choosen = 1;
-		}
-		i++;
-	}
-	if(!(choosen))	// A ENLEVER PLUS TARD : SI AUCUN CHOIX, ON PREND LE PREMIER MOUVEMENT
-	{
-        i = 1;
-	}
-    // On copie le mouvement dans le tableau d envoi final
-    finalMoves[0].src_point = potentialMoves[i-1].from;
-    finalMoves[0].dest_point = potentialMoves[i-1].to;
-    printf("Choix du mouvement %d -> %d\n", potentialMoves[i-1].from, potentialMoves[i-1].to);	// A ENLEVER PLUS TARD : AFFICHAGE DU MOUVEMENT CHOISI
+    printf("Choix du mouvement %d -> %d\n", finalMoves[0].src_point, finalMoves[0].dest_point);	// A ENLEVER PLUS TARD : AFFICHAGE DU MOUVEMENT CHOISI
 	// Appel de la fonction qui met a jour la liste des mouvements
     if(!(choosen))
     {
@@ -412,3 +448,30 @@ EPosition FindSecuredAdvance()
     
     return EPos_1;
 }
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+/** void FinalReturn(SMove* move)
+  * Stocke les mouvements a renvoyer dans un tableau intermediaire
+  *
+  *
+**/
+void FinalReturn(SMove* move)
+{
+    if(move != NULL)
+    {
+        // Parcours du tableau
+        int i = 0;
+        while(finalMoves[i].src_point && i <= 3)
+        {
+            i++;
+        }
+        finalMoves[i].src_point = move->src_point;
+        finalMoves[i].dest_point = move->dest_point;
+    }
+}
+ 
+

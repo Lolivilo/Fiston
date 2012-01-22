@@ -72,10 +72,10 @@ int main()
 	plateau[20].nb_checkers = 0;
 
 	plateau[21].player = EPlayer1;
-	plateau[21].nb_checkers = 0;
+	plateau[21].nb_checkers = 1;
 
-	plateau[22].player = EPlayer1;
-	plateau[22].nb_checkers = 0;
+	plateau[22].player = EPlayer2;
+	plateau[22].nb_checkers = 1;
 
 	plateau[23].player = EPlayer2;
 	plateau[23].nb_checkers = 2;

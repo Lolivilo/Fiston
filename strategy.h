@@ -26,7 +26,8 @@ void IsEligibleForRelease();
 void AnalysePlateau();
 void UpdateAfterDecision(int previousMoveIndex, int exitPrison);
 void PriorityLevel(Strat_move* move);
+void EvaluateToExit(Strat_move* move);
 void ChooseMove(int tabLength);
 EPosition FindSecuredAdvance();
-
+void FinalReturn(SMove* move);
 #endif
