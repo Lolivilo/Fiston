@@ -93,8 +93,8 @@ int main()
 	{
 		etat.zones[i] = plateau[i];
 	}
-	etat.die1 = 3;
-	etat.die2 = 2;
+	etat.die1 = 2;
+	etat.die2 = 3;
 	etat.score = 0;
 	etat.scoreP2 = 0;
 	etat.stake = 0;
@@ -109,6 +109,14 @@ int main()
     }
     StartGame();
 	MakeDecision(&etat, moves, 0);
+    int a = 0;
+    printf("\n\nTableau renvoye : \n");
+    for(a = 0 ; a <= 3 ; a++)
+    {
+        printf("moves[%d].src_point = %d\tmoves[%d].dest_point = %d\n", a, moves[a].src_point, a, moves[a].dest_point);
+    }
     EndGame();
+    
+    
 	return 0;
 }

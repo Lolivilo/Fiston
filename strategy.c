@@ -97,6 +97,11 @@ void MakeDecision(const SGameState * const gameState, SMove moves[4], unsigned i
 	printf("DES INITIAUX : | %d | %d | %d | %d |\n", dies[1], dies[2], dies[3], dies[4]);	
 	ListPotentialMoves();
     
+    // Remplissage du tableau renvoye
+    for(i = 0 ; i <= 3 ; i++)
+    {
+        moves[i] = finalMoves[i];
+    }
 }
 
 
@@ -205,7 +210,7 @@ void IsEligibleForRelease()
     }
     if(!(canPlay))  // Si on ne peut pas jouer, notre tour est termine
     {
-        //FinalReturn(NULL);
+        FinalReturn(NULL);
         printf("TOUR TERMINE !!!!!\n");
     }
     else
@@ -347,6 +352,7 @@ void ChooseMove(int tabLength)
             }
             i++;
         }
+        printf("Choix du mouvement %d -> %d\n", potentialMoves[max].from, potentialMoves[max].to);
         FinalReturn(&potentialMoves[max]);
         choosen = 1;
         exitPrison = 1;
@@ -382,11 +388,9 @@ void ChooseMove(int tabLength)
         {
             i = 1;
         }
-        // On copie le mouvement dans le tableau d envoi final
-        finalMoves[0].src_point = potentialMoves[i-1].from;
-        finalMoves[0].dest_point = potentialMoves[i-1].to;
+        printf("Choix du mouvement %d -> %d\n", potentialMoves[i-1].from, potentialMoves[i-1].to);
+        FinalReturn(&potentialMoves[i-1]);
     }
-    printf("Choix du mouvement %d -> %d\n", finalMoves[0].src_point, finalMoves[0].dest_point);	// A ENLEVER PLUS TARD : AFFICHAGE DU MOUVEMENT CHOISI
 	// Appel de la fonction qui met a jour la liste des mouvements
     if(!(choosen))
     {
@@ -469,7 +473,7 @@ EPosition FindSecuredAdvance()
 
 /** void FinalReturn(Strat_move* move)
   * Stocke les mouvements a renvoyer dans un tableau intermediaire
-  *
+  * @param Strat_move* move : le mouvement a stocker
   *
 **/
 void FinalReturn(Strat_move* move)
@@ -478,7 +482,6 @@ void FinalReturn(Strat_move* move)
     {
         // Parcours du tableau
         int i = 0;
-        printf("BORDEL DE CHIOTTE DE MERDE\n");
         while( (finalMoves[i].src_point != -1) && (i <= 3) )
         {
             i++;
