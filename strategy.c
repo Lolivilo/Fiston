@@ -16,7 +16,7 @@
 SGameState currentGameState;    // Copie locale de l etat courant du jeu
 Strat_move* potentialMoves;     // Tableau de mouvements potentiels
 int dies[5];	// | nombre_de_des | de1 | de2 | de3 | de4 |
-SMove finalMoves[4];
+SMove* finalMoves;
 
 
 void InitLibrary(char name[50])
@@ -31,12 +31,25 @@ void StartMatch(const unsigned int target_score)
 
 void StartGame()
 {
-	
+	// Allocation du tableau temporaire de ressources
+    finalMoves = (SMove*) malloc(4 * sizeof(SMove));
+    if(finalMoves == NULL)
+    {
+        printf("Erreur d'allocation !\n");
+        exit(0);
+    }
+    int i;
+    for(i = 0 ; i <= 4 ; i++)
+    {
+        finalMoves[i].src_point = EPos_nopos;
+        finalMoves[i].dest_point = EPos_nopos;
+    }
 }
 
 void EndGame()
 {
-	
+	// Desallocation du tableau temporaire de ressources
+    free(finalMoves);
 }
 
 void EndMatch()
@@ -192,7 +205,8 @@ void IsEligibleForRelease()
     }
     if(!(canPlay))  // Si on ne peut pas jouer, notre tour est termine
     {
-        FinalReturn(NULL);
+        //FinalReturn(NULL);
+        printf("TOUR TERMINE !!!!!\n");
     }
     else
     {
@@ -333,8 +347,7 @@ void ChooseMove(int tabLength)
             }
             i++;
         }
-        finalMoves[0].src_point = potentialMoves[max].from;
-        finalMoves[0].dest_point = potentialMoves[max].to;
+        FinalReturn(&potentialMoves[max]);
         choosen = 1;
         exitPrison = 1;
     }
@@ -454,24 +467,24 @@ EPosition FindSecuredAdvance()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-/** void FinalReturn(SMove* move)
+/** void FinalReturn(Strat_move* move)
   * Stocke les mouvements a renvoyer dans un tableau intermediaire
   *
   *
 **/
-void FinalReturn(SMove* move)
+void FinalReturn(Strat_move* move)
 {
     if(move != NULL)
     {
         // Parcours du tableau
         int i = 0;
-        while(finalMoves[i].src_point && i <= 3)
+        printf("BORDEL DE CHIOTTE DE MERDE\n");
+        while( (finalMoves[i].src_point != -1) && (i <= 3) )
         {
             i++;
         }
-        finalMoves[i].src_point = move->src_point;
-        finalMoves[i].dest_point = move->dest_point;
+        finalMoves[i].src_point = move->from;
+        finalMoves[i].dest_point = move->to;
     }
 }
- 
 

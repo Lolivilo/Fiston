@@ -107,7 +107,8 @@ int main()
         moves[j].src_point = EPos_1;
         moves[j].dest_point = EPos_1;
     }
+    StartGame();
 	MakeDecision(&etat, moves, 0);
-    
+    EndGame();
 	return 0;
 }

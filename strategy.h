@@ -29,5 +29,5 @@ void PriorityLevel(Strat_move* move);
 void EvaluateToExit(Strat_move* move);
 void ChooseMove(int tabLength);
 EPosition FindSecuredAdvance();
-void FinalReturn(SMove* move);
+void FinalReturn(Strat_move* move);
 #endif
