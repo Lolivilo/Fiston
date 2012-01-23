@@ -219,6 +219,17 @@ void IsEligibleForRelease()
     }
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+/** void FillPotentialMoves(EPosition start, int die, int moveNumber)
+  * Remplie le tableau de mouvements potentiels
+  @param EPosition start : le point de depart du mouvement a ajouter
+         int die : la valeur du de utilise
+         int moveNumber : le numero du mouvement a ajouter (pour redimensionner le tableau)
+  *
+**/
 void FillPotentialMoves(EPosition start, int die, int moveNumber)
 {
     // Augmentation de la taille du tableau de 1
@@ -250,10 +261,30 @@ void FillPotentialMoves(EPosition start, int die, int moveNumber)
 }
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+/** void AnalysePlateau()
+  * Analyse de maniere generale le plateau
+  *
+**/
 void AnalysePlateau()
 {
-    // Analyse du plateau pour voir si on a un pion seul
-    //int zone;
+    // On regarde si on peut marquer
+    EPosition current;
+    int checkerFound = 0;
+    for(current = EPos_24 ; current >= EPos_7 ; current--)
+    {
+        printf("Zone %d\t\tPlayer = %d\t\tPions = %d\n", current, currentGameState.zones[current].player, currentGameState.zones[current].nb_checkers);
+        if( (currentGameState.zones[current].player == EPlayer1) && (currentGameState.zones[current].nb_checkers > 0) )
+        {
+            checkerFound = 1;
+        }
+    }
+    if(!(checkerFound))     // A MODIFIER PLUS TARD
+    {
+        printf("ON PEUT MARQUER LOL\n");
+    }
 }
 
 
@@ -338,9 +369,9 @@ void ChooseMove(int tabLength)
     }*/
     
     // Priorite 1 : Si on a des prisonniers
+    int max = 0;
     if(potentialMoves[0].isPrisonner)   // S il y a des prisonniers, seuls eux sont listes donc pas besoin de parcourir la liste
     {
-        int max = 0;
         int lastPriority = -1;
         while(i <= tabLength)
         {
@@ -396,6 +427,10 @@ void ChooseMove(int tabLength)
     {
         UpdateAfterDecision(0, exitPrison);
     }
+    else if (choosen && exitPrison)
+    {
+        UpdateAfterDecision(max, exitPrison);
+    }
     else
     {
         UpdateAfterDecision(i-1, exitPrison);
@@ -406,7 +441,7 @@ void ChooseMove(int tabLength)
 /** UpdateAfterDecision
     * Met a jour la liste des mouvements potentiels de la strategie apres la choix d un premier mouvement
     * ainsi que l etat courant du plateau
-    * @param previousMoveIndex : la position, dans la liste, mouvement precedemment effectue
+    * @param previousMoveIndex : la position, dans la liste, du mouvement precedemment effectue
     * @param exitPrison : indique si le mouvement choisit est une sortie de prison
 **/
 void UpdateAfterDecision(int previousMoveIndex, int exitPrison)
@@ -414,7 +449,7 @@ void UpdateAfterDecision(int previousMoveIndex, int exitPrison)
 	Strat_move lastMove = potentialMoves[previousMoveIndex];
 	// 1 : MaJ du GameState
 	currentGameState.zones[lastMove.from].nb_checkers--;
-    if(lastMove.canEat != 1)    // On ne change pas le nombre de pion si on mange un ennemi (changement de couleur)
+    if( !((lastMove.canEat == 1) || ((exitPrison) && (lastMove.priority == 4))) )    // On ne change pas le nombre de pion si on mange un ennemi (changement de couleur)
     {
         currentGameState.zones[lastMove.to].nb_checkers++;
     }

@@ -6,7 +6,6 @@
 
 
 
-
 // Structure locale de la strategie representant un mouvement possible en fonction de l'etat courant du jeu
 typedef struct
 {
