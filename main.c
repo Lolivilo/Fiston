@@ -9,19 +9,19 @@ int main()
 	SZone plateau[28];
 	
 	plateau[0].player = EPlayer1;
-	plateau[0].nb_checkers = 0; // 2
+	plateau[0].nb_checkers = 2; 
 	
 	plateau[1].player = EPlayer2;
 	plateau[1].nb_checkers = 0;
 	
 	plateau[2].player = EPlayer2;
-	plateau[2].nb_checkers = 0;
+	plateau[2].nb_checkers = 1;
 	
 	plateau[3].player = EPlayer2;
 	plateau[3].nb_checkers = 0;
 	
-	plateau[4].player = EPlayer2;
-	plateau[4].nb_checkers = 0;
+	plateau[4].player = EPlayer1;
+	plateau[4].nb_checkers = 1;
 	
 	plateau[5].player = EPlayer2;
 	plateau[5].nb_checkers = 5;
@@ -42,13 +42,13 @@ int main()
 	plateau[10].nb_checkers = 0;
 	
 	plateau[11].player = EPlayer1;
-	plateau[11].nb_checkers = 0;    //5
+	plateau[11].nb_checkers = 2;
 
 	plateau[12].player = EPlayer2;
 	plateau[12].nb_checkers = 5;
 
-	plateau[13].player = EPlayer2;
-	plateau[13].nb_checkers = 1;
+	plateau[13].player = EPlayer1;
+	plateau[13].nb_checkers = 2;
 
 	plateau[14].player = EPlayer1;
 	plateau[14].nb_checkers = 0;
@@ -57,13 +57,13 @@ int main()
 	plateau[15].nb_checkers = 0;
 
 	plateau[16].player = EPlayer1;
-	plateau[16].nb_checkers = 0;    //3
+	plateau[16].nb_checkers = 2;
 
 	plateau[17].player = EPlayer1;
 	plateau[17].nb_checkers = 0;
 
 	plateau[18].player = EPlayer1;
-	plateau[18].nb_checkers = 0;    // 5
+	plateau[18].nb_checkers = 5;
 
 	plateau[19].player = EPlayer2;
 	plateau[19].nb_checkers = 0;
@@ -84,7 +84,7 @@ int main()
     plateau[24].nb_checkers = 0;
     
     plateau[25].player = EPlayer1;  // Prison
-    plateau[25].nb_checkers = 1;
+    plateau[25].nb_checkers = 0;
     
     
 	SGameState etat;
