@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "strategy.h"
 
 // Soit on sort du plateau
@@ -69,6 +70,7 @@ int TakeDouble(const SGameState * const gameState)
 
 void MakeDecision(const SGameState * const gameState, SMove moves[4], unsigned int lastTimeError)
 {
+	srand(time(NULL));	// Pour le random
 	currentGameState = *gameState;  // Copie locale de l etat courant du jeu
 
     // RaZ du tableau de mouvements
@@ -446,9 +448,9 @@ void ChooseMove(int tabLength)
         /// SI AUCUN MOUVEMENT BIEN ON PEUT REGARDER SI ON PEUT RAVANCER NOS PIONS DANS LES ZONES 1-6
         if(!(choosen))	// A ENLEVER PLUS TARD : SI AUCUN CHOIX, ON PREND LE PREMIER MOUVEMENT
         {
-            i = 0;
-				printf("Choix du mouvement %d -> %d\n", potentialMoves[i].from, potentialMoves[i].to);
-        		FinalReturn(&potentialMoves[i]);
+            i = ChooseDefaultMove(tabLength);
+			printf("Choix du mouvement %d -> %d\n", potentialMoves[i].from, potentialMoves[i].to);
+        	FinalReturn(&potentialMoves[i]);
         }
         
     }
@@ -509,7 +511,6 @@ void UpdateAfterDecision(int previousMoveIndex, int exitPrison)
     //A SUPPRIMER : AFFICHAGE DE LA LISTE DES DES APRES UN CHOIX
 	printf("DES : %d ||| %d | %d | %d | %d |\n", dies[0], dies[1], dies[2], dies[3], dies[4]);
 	// 3 : On recomment l evaluation du plateau seulement s il reste des des
-	//if(!(dies[1] == -1 && dies[2] == -1 && dies[3] == -1 && dies[4] == -1 ))
     if(dies[0] > 0)
 	{
 		ListPotentialMoves();
@@ -555,6 +556,29 @@ int ChooseEatMove(int length)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+/** int ChooseDefaultMove(int length)
+  * Choisis un mouvement par defaut (si aucun autre n a ete determine avant)
+  * - On regarde si on peut remplir les cases de 1 a 6 (la sortie de prison adverse) par au moins 2 de nos pions
+  * - Sinon, on prend au hasard
+  * @param length : la taille du tableau de mouvements
+  * return int : l index du mouvement selectionne
+*/
+int ChooseDefaultMove(int length)
+{
+	int ran = rand() % length;
+	do
+	{
+		ran = rand() % length;
+	}
+	while(potentialMoves[ran].canMark);
+	
+	return(ran);
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 /** void FinalReturn(Strat_move* move)
   * Stocke les mouvements a renvoyer dans un tableau intermediaire
   * @param Strat_move* move : le mouvement a stocker
@@ -562,7 +586,6 @@ int ChooseEatMove(int length)
 **/
 void FinalReturn(Strat_move* move)
 {
-		printf("Appel de FinalReturn(%d->%d)\n", move->from, move->to);
     if(move != NULL)
     {
         // Parcours du tableau

@@ -29,5 +29,4 @@ void EvaluateToExit(Strat_move* move);
 void ChooseMove(int tabLength);
 void FinalReturn(Strat_move* move);
 int ChooseEatMove(int length);
-int ChooseDefaultMove(int length);
 #endif
