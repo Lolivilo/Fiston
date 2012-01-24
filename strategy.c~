@@ -434,11 +434,12 @@ void ChooseMove(int tabLength)
         // Priorite 3 : Si mouvement permet de manger un pion adverse
         if(!(choosen))
         {
-            i = ChooseEatMove(tabLength);
-            if(i != -1)
+            i = 0;
+            int ret = ChooseEatMove(tabLength);
+            if(ret != -1)
             {
                 choosen = 1;
-                FinalReturn(&potentialMoves[i]);
+                FinalReturn(&potentialMoves[ret]);
             }
         }
         
@@ -446,9 +447,9 @@ void ChooseMove(int tabLength)
         /// SI AUCUN MOUVEMENT BIEN ON PEUT REGARDER SI ON PEUT RAVANCER NOS PIONS DANS LES ZONES 1-6
         if(!(choosen))	// A ENLEVER PLUS TARD : SI AUCUN CHOIX, ON PREND LE PREMIER MOUVEMENT
         {
-            i = 0;
-				printf("Choix du mouvement %d -> %d\n", potentialMoves[i].from, potentialMoves[i].to);
-        		FinalReturn(&potentialMoves[i]);
+            i = 1;
+				printf("Choix du mouvement %d -> %d\n", potentialMoves[i-1].from, potentialMoves[i-1].to);
+        		FinalReturn(&potentialMoves[i-1]);
         }
         
     }
@@ -463,7 +464,7 @@ void ChooseMove(int tabLength)
     }
     else
     {
-        UpdateAfterDecision(i, 0);
+        UpdateAfterDecision(i-1, 0);
     }
 }
 
