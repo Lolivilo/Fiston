@@ -29,5 +29,6 @@ void ChooseMove(int tabLength);
 void FinalReturn(int index);
 int ChooseMarkMove(int length);
 int ChooseEatMove(int length);
+int ChooseProtectMove(int length);
 int ChooseDefaultMove(int length);
 #endif

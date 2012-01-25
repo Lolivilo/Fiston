@@ -14,8 +14,8 @@ int main()
 	plateau[1].player = EPlayer1;
 	plateau[1].nb_checkers = 3;
 	
-	plateau[2].player = EPlayer2;
-	plateau[2].nb_checkers = 0;
+	plateau[2].player = EPlayer1;
+	plateau[2].nb_checkers = 1;
 	
 	plateau[3].player = EPlayer1;
 	plateau[3].nb_checkers = 1;
@@ -24,10 +24,10 @@ int main()
 	plateau[4].nb_checkers = 6;
 	
 	plateau[5].player = EPlayer1;
-	plateau[5].nb_checkers = 5;
+	plateau[5].nb_checkers = 1;
 	
 	plateau[6].player = EPlayer1;
-	plateau[6].nb_checkers = 0;
+	plateau[6].nb_checkers = 1;
 	
 	plateau[7].player = EPlayer1;
 	plateau[7].nb_checkers = 0;
@@ -36,7 +36,7 @@ int main()
 	plateau[8].nb_checkers = 0;
 	
 	plateau[9].player = EPlayer1;
-	plateau[9].nb_checkers = 0;
+	plateau[9].nb_checkers = 3;
 	
 	plateau[10].player = EPlayer1;
 	plateau[10].nb_checkers = 2;
@@ -93,7 +93,7 @@ int main()
 	{
 		etat.zones[i] = plateau[i];
 	}
-	etat.die1 = 6;
+	etat.die1 = 3;
 	etat.die2 = 3;
 	etat.score = 0;
 	etat.scoreP2 = 0;

@@ -15,6 +15,7 @@
                         || (currentGameState.zones[zone - de].nb_checkers == 0)	\
                         || (currentGameState.zones[zone - de].player == EPlayer2 && currentGameState.zones[zone - de].nb_checkers == 1)) \
 
+#define HavePrisoner currentGameState.zones[EPos_BarP1].nb_checkers > 0
 
 // Variables locales
 SGameState currentGameState;    // Copie locale de l etat courant du jeu
@@ -130,7 +131,7 @@ void ListPotentialMoves()
         exit(0);
     }
     // Si un a un pion prisonnier, il faut le liberer avant toute chose
-    if(currentGameState.zones[EPos_BarP1].nb_checkers > 0)
+    if(HavePrisoner)
     {
         printf("TA %d PRISONNERS PATATE !!!\n", currentGameState.zones[EPos_BarP1].nb_checkers);
         IsEligibleForRelease();
@@ -329,6 +330,28 @@ int CanWeEat(int length)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+
+/** int CanWeProtect(int length)
+ * Analyse le plateau et regarde si on peut proteger
+ * @return int : 1 si on peut proteger ; 0 sinon
+ **/
+int CanWeProtect(int length)
+{
+    int i = 0;
+    // On regarde dans notre tableau si on peut proteger
+    while(i <= length)
+    {
+        if(potentialMoves[i].canProtect)
+        {
+            return 1;
+        }
+        i++;
+    }
+    return 0;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /** MoveType
   * Donne le type du mouvement fraichement trouve
   * @param Strat_move move : le mouvement a evaluer
@@ -393,77 +416,48 @@ void EvaluateToExit(Strat_move* move)
 **/
 void ChooseMove(int tabLength)
 {
-    int i = 0;
 	int choosen = 0;
     
     // Priorite 1 : Si on a des prisonniers
-    int max = 0;
-    if(potentialMoves[0].from == EPos_BarP1)   // S il y a des prisonniers, seuls eux sont listes donc pas besoin de parcourir la liste
+    if( HavePrisoner )   // S il y a des prisonniers, seuls eux sont listes donc pas besoin de parcourir la liste
     {
-        int lastPriority = -1;
-        while(i <= tabLength)
-        {
-            // On prend le mouvement avec la priorite maximale
-            if(potentialMoves[i].priority > lastPriority)
-            {
-                lastPriority = potentialMoves[i].priority;
-                max = i;
-            }
-            i++;
-        }
-        printf("Choix du mouvement %d -> %d\n", potentialMoves[max].from, potentialMoves[max].to);
-        FinalReturn(max);
+        FinalReturn( FindMaxPriority(potentialMoves, tabLength) );
         choosen = 1;
     }
-
-    else if(CanWeMark())
+    else if( CanWeMark() )
     {
         FinalReturn( ChooseMarkMove(tabLength) );
         choosen = 1;
     }
-    else
+    else if( CanWeProtect(tabLength) )
     {
-        // Priorite 2 : Si on peut proteger un pion seul
-        while((i <= tabLength) && !(choosen))
-        {
-            if(potentialMoves[i].canProtect)
+        choosen = 1;
+        /*if(i <= tabLength)     // On continue de parcourir seulement s'il y a d'autres mouvements
+        {                           // Pour regarder s il y a une plus grande priorite
+            int currentPriority = potentialMoves[i].priority;
+            int iPrim = i + 1;
+            while( (iPrim <= tabLength) )
             {
-                choosen = 1;
-                if(i <= tabLength)     // On continue de parcourir seulement s'il y a d'autres mouvements
-                {                           // Pour regarder s il y a une plus grande priorite
-                    int currentPriority = potentialMoves[i].priority;
-                    int iPrim = i + 1;
-                    while( (iPrim <= tabLength) )
-                    {
-                        if( (potentialMoves[iPrim].canProtect) && (potentialMoves[iPrim].priority > currentPriority))
-                        {
-                            currentPriority = potentialMoves[iPrim].priority;
-                            i = iPrim;
-                        }
-                        iPrim++;
-                    }
+                if( (potentialMoves[iPrim].canProtect) && (potentialMoves[iPrim].priority > currentPriority))
+                {
+                    currentPriority = potentialMoves[iPrim].priority;
+                    i = iPrim;
                 }
-                FinalReturn(i);
+                iPrim++;
             }
-            i++;
         }
-        // Priorite 3 : Si mouvement permet de manger un pion adverse
-       if(!(choosen) && CanWeEat(tabLength))
-        {
-            i = ChooseEatMove(tabLength);
-            choosen = 1;
-            FinalReturn(i);
-        }
-        
-        
-        /// SI AUCUN MOUVEMENT BIEN ON PEUT REGARDER SI ON PEUT RAVANCER NOS PIONS DANS LES ZONES 1-6
-        if(!(choosen))	// A ENLEVER PLUS TARD : SI AUCUN CHOIX, ON PREND LE PREMIER MOUVEMENT
-        {
-            i = ChooseDefaultMove(tabLength);
-			printf("Choix du mouvement %d -> %d\n", potentialMoves[i].from, potentialMoves[i].to);
-        	FinalReturn(i);
-        }
-        
+        FinalReturn(i);*/
+        FinalReturn( ChooseProtectMove(tabLength) );
+    }
+    
+    if(!(choosen) && CanWeEat(tabLength))   // Si on peut manger un pion
+    {
+        choosen = 1;
+        FinalReturn( ChooseEatMove(tabLength) );
+    }
+    if(!(choosen))  // Choix par defaut (aucun meilleur a priori)
+    {
+        FinalReturn( ChooseDefaultMove(tabLength) );
     }
 }
 
@@ -597,6 +591,58 @@ int ChooseEatMove(int length)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+/** Strat_move* ChooseProtectMove()
+ * Choisis le meilleur mouvement protecteur a jouer
+ * @param int length : la taille du tableau de mouvements
+ * @return int : l index du mouvement choisi (-1 si aucun)
+ *
+ **/
+int ChooseProtectMove(int length)
+{
+    int i = 0;
+    while( i <= length )
+    {
+        if( (potentialMoves[i].canProtect) && currentGameState.zones[potentialMoves[i].from].nb_checkers > 2 )
+        {
+            potentialMoves[i].priority = 3; // Si on protege sans mettre en danger
+        }
+        else if( (potentialMoves[i].canProtect) && (currentGameState.zones[potentialMoves[i].from].nb_checkers == 1) )
+        {
+            potentialMoves[i].priority = 2;
+        }
+        else if( (potentialMoves[i].canProtect) && (currentGameState.zones[potentialMoves[i].from].nb_checkers == 2) )
+        {   
+            // PROBAAAAAAAAAAAA
+            potentialMoves[i].priority = 1;
+        }
+        i++;
+    }
+    
+    return ( FindMaxPriority(potentialMoves, length) );
+    /*
+    int i = 0;
+    int choice = -1;
+    EPosition dangerous = EPos_nopos;
+    while( i <= length )  // Il est plus important de manger le pion le plus proche de la sortie
+    {
+        if(potentialMoves[i].canEat)
+        {
+            if(potentialMoves[i].to <= dangerous)
+            {
+                choice = i;
+                dangerous = potentialMoves[i].to;
+            }
+        }
+        i++;
+    }*/
+    
+    //return choice;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 /** int ChooseDefaultMove(int length)
   * Choisis un mouvement par defaut (si aucun autre n a ete determine avant)
   * - On regarde si on peut remplir les cases de 1 a 6 (la sortie de prison adverse) par au moins 2 de nos pions
@@ -612,7 +658,7 @@ int ChooseDefaultMove(int length)
     {
         if( (potentialMoves[i].to <= EPos_6) && (potentialMoves[i].to != EPos_OutP1) )
         {
-            if( (currentGameState.zones[potentialMoves[i].to].nb_checkers == 1) && (currentGameState.zones[potentialMoves[i].from].nb_checkers > 1) )
+            if( (currentGameState.zones[potentialMoves[i].to].nb_checkers == 1) && (currentGameState.zones[potentialMoves[i].from].nb_checkers > 2) )
             {
                 potentialMoves[i].priority = 4; // Priorite max si on protege un pion sans mettre en danger un autre (couverture gardee)
             }
@@ -622,12 +668,14 @@ int ChooseDefaultMove(int length)
             }
             else if( (currentGameState.zones[potentialMoves[i].to].nb_checkers == 1) )
             {
+                // PROBAAAAAAA
                 potentialMoves[i].priority = 2; // Mise en danger d un pion sur la zone de depart
             }
             else if( (currentGameState.zones[potentialMoves[i].to].nb_checkers == 0)
                   && (currentGameState.zones[EPos_BarP2].nb_checkers == 0)
                   && (dies[5] == dies[4]) )
             {
+                // PROBAAAAAA
                 potentialMoves[i].priority = 1; // Mise en place d un seul pion mais avec aucun pion adverse a sortir de prison
             }
         }
