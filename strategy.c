@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 #include "strategy.h"
 
 // Soit on sort du plateau
@@ -22,7 +23,7 @@ SMove* finalMoves;
 
 void InitLibrary(char name[50])
 {
-	
+	strcpy(name, "Strategie Olivier & Oussama");
 }
 
 void StartMatch(const unsigned int target_score)
@@ -51,6 +52,10 @@ void EndGame()
 {
 	// Desallocation du tableau temporaire de ressources
     free(finalMoves);
+    if(potentialMoves != NULL)
+    {
+        free(potentialMoves);
+    }
 }
 
 void EndMatch()
@@ -117,6 +122,11 @@ void ListPotentialMoves()
 {
 	// Remise a zero du tableau de mouvements
     potentialMoves = realloc(potentialMoves, 0);
+    if(potentialMoves == NULL)
+    {
+        printf("Erreur d'allocation !\n");
+        exit(0);
+    }
     // Si un a un pion prisonnier, il faut le liberer avant toute chose
     if(currentGameState.zones[EPos_BarP1].nb_checkers > 0)
     {
@@ -214,7 +224,7 @@ void IsEligibleForRelease()
     }
     if(!(canPlay))  // Si on ne peut pas jouer, notre tour est termine
     {
-        FinalReturn(NULL);
+        FinalReturn(-1);
         printf("TOUR TERMINE !!!!!\n");
     }
     else
@@ -387,7 +397,7 @@ void ChooseMove(int tabLength)
             i++;
         }
         printf("Choix du mouvement %d -> %d\n", potentialMoves[max].from, potentialMoves[max].to);
-        FinalReturn(&potentialMoves[max]);
+        FinalReturn(max);
         choosen = 1;
     }
 
@@ -404,7 +414,7 @@ void ChooseMove(int tabLength)
             j++;
         }
         printf("Choix du mouvement %d -> %d\n", potentialMoves[indexChoisi].from, potentialMoves[indexChoisi].to);
-        FinalReturn(&potentialMoves[j-1]);
+        FinalReturn(j-1);
         choosen = 1;
     }
     else
@@ -429,6 +439,7 @@ void ChooseMove(int tabLength)
                         iPrim++;
                     }
                 }
+                FinalReturn(i);
             }
             i++;
         }
@@ -440,7 +451,7 @@ void ChooseMove(int tabLength)
             if(i != -1)
             {
                 choosen = 1;
-                FinalReturn(&potentialMoves[i]);
+                FinalReturn(i);
             }
         }
         
@@ -450,12 +461,12 @@ void ChooseMove(int tabLength)
         {
             i = ChooseDefaultMove(tabLength);
 			printf("Choix du mouvement %d -> %d\n", potentialMoves[i].from, potentialMoves[i].to);
-        	FinalReturn(&potentialMoves[i]);
+        	FinalReturn(i);
         }
         
     }
 	// Appel de la fonction qui met a jour la liste des mouvements
-    if(!(choosen))
+    /*if(!(choosen))
     {
         UpdateAfterDecision(0, 0);
     }
@@ -466,7 +477,7 @@ void ChooseMove(int tabLength)
     else
     {
         UpdateAfterDecision(i, 0);
-    }
+    }*/
 }
 
 
@@ -565,6 +576,7 @@ int ChooseEatMove(int length)
 */
 int ChooseDefaultMove(int length)
 {
+    printf("CHOIX AU HASARD\n");
 	int ran = rand() % length;
 	do
 	{
@@ -584,9 +596,10 @@ int ChooseDefaultMove(int length)
   * @param Strat_move* move : le mouvement a stocker
   *
 **/
-void FinalReturn(Strat_move* move)
+void FinalReturn(int index)
 {
-    if(move != NULL)
+    printf("Final return(%d)\n", index);
+    if(index != -1)
     {
         // Parcours du tableau
         int i = 0;
@@ -594,8 +607,17 @@ void FinalReturn(Strat_move* move)
         {
             i++;
         }
-        finalMoves[i].src_point = move->from;
-        finalMoves[i].dest_point = move->to;
+        finalMoves[i].src_point = potentialMoves[index].from;
+        finalMoves[i].dest_point = potentialMoves[index].to;
+    }
+    
+    if(potentialMoves[index].from == EPos_BarP1)
+    {   
+        UpdateAfterDecision(index, 1);
+    }
+    else
+    {
+        UpdateAfterDecision(index, 0);
     }
 }
 

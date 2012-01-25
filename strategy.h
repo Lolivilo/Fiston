@@ -27,7 +27,7 @@ void UpdateAfterDecision(int previousMoveIndex, int exitPrison);
 void PriorityLevel(Strat_move* move);
 void EvaluateToExit(Strat_move* move);
 void ChooseMove(int tabLength);
-void FinalReturn(Strat_move* move);
+void FinalReturn(int index);
 int ChooseEatMove(int length);
 int ChooseDefaultMove(int length);
 #endif
