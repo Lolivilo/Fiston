@@ -420,18 +420,7 @@ void ChooseMove(int tabLength)
 
     else if(CanWeMark())
     {
-        int j = 1;
-        int indexChoisi = 0;
-        while(j <= tabLength)   // On cherche les pions les plus eloignes pour les rapprocher
-        {
-            if(potentialMoves[j].from > potentialMoves[j-1].from)
-            {
-                indexChoisi = j;
-            }
-            j++;
-        }
-        printf("Choix du mouvement %d -> %d\n", potentialMoves[indexChoisi].from, potentialMoves[indexChoisi].to);
-        FinalReturn(j-1);
+        FinalReturn( ChooseMarkMove(tabLength) );
         choosen = 1;
     }
     else
@@ -493,6 +482,7 @@ void ChooseMove(int tabLength)
 void UpdateAfterDecision(int previousMoveIndex, int exitPrison)
 {
 	Strat_move lastMove = potentialMoves[previousMoveIndex];
+    
 	// 1 : MaJ du GameState
 	currentGameState.zones[lastMove.from].nb_checkers--;
     if( !((lastMove.canEat == 1) || ((exitPrison) && (lastMove.priority == 4))) )    // On ne change pas le nombre de pion si on mange un ennemi (changement de couleur)
@@ -500,7 +490,8 @@ void UpdateAfterDecision(int previousMoveIndex, int exitPrison)
         currentGameState.zones[lastMove.to].nb_checkers++;
     }
 	currentGameState.zones[lastMove.to].player = EPlayer1;
-	// 2 : MaJ des des
+	
+    // 2 : MaJ des des
     int found = 0;
     int value = 1;
     while(!(found))
@@ -513,6 +504,12 @@ void UpdateAfterDecision(int previousMoveIndex, int exitPrison)
                 dies[value] = -1;
                 dies[0]--;
             }
+        }
+        else if( (lastMove.to == EPos_OutP1) && (dies[value] > lastMove.from) )
+        {
+            found = 1;
+            dies[value] = -1;
+            dies[0]--;
         }
         else if(dies[value] == (lastMove.from - lastMove.to))
         {
@@ -529,6 +526,38 @@ void UpdateAfterDecision(int previousMoveIndex, int exitPrison)
 	{
 		ListPotentialMoves();
 	}
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+/** int ChooseMarkMove()
+ * Choisis le meilleur mouvement marqueur a jouer
+ * On privilegie le rapprochement vers la sortie plutot que la sortie directe
+ * @param int length : la taille du tableau de mouvements
+ * @return int : l index du mouvement choisi (-1 si aucun)
+ *
+ **/
+int ChooseMarkMove(int length)
+{
+    // Si on est la, tous les mouvements ont un canMark == 1 !
+    int i = 0;
+    
+    while(i <= length)
+    {
+        if(potentialMoves[i].to != EPos_OutP1)
+        {
+            potentialMoves[i].priority = 2; // Si on se rapproche, on le prefere
+        }
+        else
+        {
+            potentialMoves[i].priority = 1;
+        }
+        i++;
+    }
+    
+    return( FindMaxPriority2(potentialMoves, length) );
 }
 
           
@@ -550,7 +579,7 @@ int ChooseEatMove(int length)
     {
         if(potentialMoves[i].canEat)
         {
-            if(potentialMoves[i].to >= dangerous)
+            if(potentialMoves[i].to <= dangerous)
             {
                 choice = i;
                 dangerous = potentialMoves[i].to;
@@ -660,7 +689,6 @@ void FinalReturn(int index)
         }
         finalMoves[i].src_point = potentialMoves[index].from;
         finalMoves[i].dest_point = potentialMoves[index].to;
-        
         if(potentialMoves[index].from == EPos_BarP1)
         {   
             UpdateAfterDecision(index, 1);

@@ -8,5 +8,5 @@
 **/
 
 int FindMaxPriority(Strat_move* tab, int length);
-
+int FindMaxPriority2(Strat_move* tab, int length);
 #endif

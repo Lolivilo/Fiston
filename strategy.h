@@ -28,6 +28,7 @@ void PriorityLevel(Strat_move* move);
 void EvaluateToExit(Strat_move* move);
 void ChooseMove(int tabLength);
 void FinalReturn(int index);
+int ChooseMarkMove(int length);
 int ChooseEatMove(int length);
 int ChooseDefaultMove(int length);
 #endif
