@@ -23,7 +23,7 @@ SMove* finalMoves;
 
 void InitLibrary(char name[50])
 {
-	strcpy(name, "Strategie Olivier & Oussama");
+	strcpy(name, "Strategie_Olivier_&_Oussama");
 }
 
 void StartMatch(const unsigned int target_score)
@@ -425,7 +425,7 @@ void ChooseMove(int tabLength)
             if(potentialMoves[i].canProtect)
             {
                 choosen = 1;
-                if(i < (tabLength - 1))     // On continue de parcourir seulement s'il y a d'autres mouvements
+                if(i <= tabLength)     // On continue de parcourir seulement s'il y a d'autres mouvements
                 {                           // Pour regarder s il y a une plus grande priorite
                     int currentPriority = potentialMoves[i].priority;
                     int iPrim = i + 1;
@@ -543,7 +543,7 @@ int ChooseEatMove(int length)
     int i = 0;
     int choice = -1;
     EPosition dangerous = EPos_nopos;
-    while( i <= (length - 1) )  // Il est plus important de manger le pion le plus proche de la sortie
+    while( i <= length )  // Il est plus important de manger le pion le plus proche de la sortie
     {
         if(potentialMoves[i].canEat)
         {
@@ -576,7 +576,22 @@ int ChooseEatMove(int length)
 */
 int ChooseDefaultMove(int length)
 {
-    printf("CHOIX AU HASARD\n");
+    int i = 0;
+    
+    // Remplissage 1 a 6
+    while(i <= length)
+    {
+        if( (potentialMoves[i].to <= EPos_6) && (potentialMoves[i].to != EPos_OutP1) )
+        {
+            if(currentGameState.zones[potentialMoves[i].to].nb_checkers == 1)
+            {
+                return i;
+            }
+        }
+        i++;
+    }
+    
+    // Choix au hasard
 	int ran = rand() % length;
 	do
 	{
