@@ -3,6 +3,8 @@
 #include <time.h>
 #include <string.h>
 #include "strategy.h"
+#include "traitementTableau.h"
+
 
 // Soit on sort du plateau
 // Soit on arrive sur une zone a nous
@@ -262,7 +264,7 @@ void FillPotentialMoves(EPosition start, int die, int moveNumber)
     }
     else
     {
-        if((int)(start - die) < 0)                      // Sortie pour marquer
+        if((int)(start - die) <= 0)                      // Sortie pour marquer
         {
             potentialMoves[moveNumber].to = EPos_OutP1;
         }
@@ -301,6 +303,29 @@ int CanWeMark()
     return 0;
 }
 
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+/** int CanWeEat()
+ * Analyse le plateau et regarde si on peut manger
+ * @return int : 1 si on peut manger ; 0 sinon
+ **/
+int CanWeEat(int length)
+{
+    int i = 0;
+    // On regarde dans notre tableau si on peut manger
+    while(i <= length)
+    {
+        if(potentialMoves[i].canEat)
+        {
+            return 1;
+        }
+        i++;
+    }
+    return 0;
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -443,16 +468,12 @@ void ChooseMove(int tabLength)
             }
             i++;
         }
-
         // Priorite 3 : Si mouvement permet de manger un pion adverse
-        if(!(choosen))
+       if(!(choosen) && CanWeEat(tabLength))
         {
             i = ChooseEatMove(tabLength);
-            if(i != -1)
-            {
-                choosen = 1;
-                FinalReturn(i);
-            }
+            choosen = 1;
+            FinalReturn(i);
         }
         
         
@@ -465,20 +486,10 @@ void ChooseMove(int tabLength)
         }
         
     }
-	// Appel de la fonction qui met a jour la liste des mouvements
-    /*if(!(choosen))
-    {
-        UpdateAfterDecision(0, 0);
-    }
-    else if (choosen && potentialMoves[0].isPrisonner)
-    {
-        UpdateAfterDecision(max, 1);
-    }
-    else
-    {
-        UpdateAfterDecision(i, 0);
-    }*/
 }
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 /** UpdateAfterDecision
@@ -577,29 +588,61 @@ int ChooseEatMove(int length)
 int ChooseDefaultMove(int length)
 {
     int i = 0;
-    
     // Remplissage 1 a 6
-    while(i <= length)
+    while(i <= length)  // Affectation de priorites
     {
         if( (potentialMoves[i].to <= EPos_6) && (potentialMoves[i].to != EPos_OutP1) )
         {
-            if(currentGameState.zones[potentialMoves[i].to].nb_checkers == 1)
+            if( (currentGameState.zones[potentialMoves[i].to].nb_checkers == 1) && (currentGameState.zones[potentialMoves[i].from].nb_checkers > 1) )
             {
-                return i;
+                potentialMoves[i].priority = 4; // Priorite max si on protege un pion sans mettre en danger un autre (couverture gardee)
+            }
+            else if( (currentGameState.zones[potentialMoves[i].to].nb_checkers == 1) && (currentGameState.zones[potentialMoves[i].from].nb_checkers == 1) )
+            {
+                potentialMoves[i].priority = 3; // Idem avec une perte de zone
+            }
+            else if( (currentGameState.zones[potentialMoves[i].to].nb_checkers == 1) )
+            {
+                potentialMoves[i].priority = 2; // Mise en danger d un pion sur la zone de depart
+            }
+            else if( (currentGameState.zones[potentialMoves[i].to].nb_checkers == 0) && (currentGameState.zones[EPos_BarP2].nb_checkers == 0) )
+            {
+                potentialMoves[i].priority = 1; // Mise en place d un seul pion mais avec aucun pion adverse a sortir de prison
             }
         }
         i++;
     }
+
+    i = FindMaxPriority(potentialMoves, length);
+   
+    if(i != -1)
+    {
+        return i;
+    }
+    
     
     // Choix au hasard
-	int ran = rand() % length;
-	do
-	{
-		ran = rand() % length;
-	}
-	while(potentialMoves[ran].canMark);
-	
+    if(length == 0 && potentialMoves[0].to == EPos_OutP1)
+    {
+        return(-1);
+    }
+    else
+    {
+        int cpt = 0;
+        int ran = rand() % length;
+        do
+        {
+            ran = rand() % length;
+            cpt++;
+        }
+        while( (potentialMoves[ran].canMark) && (cpt < length) );   // Si on boucle trop longtemps, c'est qu'uncun mouvement n'est possible
+
+        if(cpt > length)
+        {
+            return(-1);
+        }
 	return(ran);
+    }
 }
 
 
@@ -624,15 +667,15 @@ void FinalReturn(int index)
         }
         finalMoves[i].src_point = potentialMoves[index].from;
         finalMoves[i].dest_point = potentialMoves[index].to;
-    }
-    
-    if(potentialMoves[index].from == EPos_BarP1)
-    {   
-        UpdateAfterDecision(index, 1);
-    }
-    else
-    {
-        UpdateAfterDecision(index, 0);
+        
+        if(potentialMoves[index].from == EPos_BarP1)
+        {   
+            UpdateAfterDecision(index, 1);
+        }
+        else
+        {
+            UpdateAfterDecision(index, 0);
+        }
     }
 }
 
