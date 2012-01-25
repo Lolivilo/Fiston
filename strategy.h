@@ -14,7 +14,6 @@ typedef struct
 	int canEat;		// Possibilite de manger (booleen)
 	int canMark;	// Possibilite de marquer (booleen)
     int canProtect; // Possibilite de proteger (booleen)
-    int isPrisonner;
     int priority;
 } Strat_move;
 
@@ -24,7 +23,7 @@ void FillPotentialMoves(EPosition start, int length, int moveNumber);
 void IsEligibleForRelease();
 void AnalysePlateau();
 void UpdateAfterDecision(int previousMoveIndex, int exitPrison);
-void PriorityLevel(Strat_move* move);
+void MoveType(Strat_move* move);
 void EvaluateToExit(Strat_move* move);
 void ChooseMove(int tabLength);
 void FinalReturn(int index);

@@ -255,11 +255,9 @@ void FillPotentialMoves(EPosition start, int die, int moveNumber)
     potentialMoves[moveNumber].canMark = 0;
     potentialMoves[moveNumber].canProtect = 0;
     potentialMoves[moveNumber].priority = 0;
-    potentialMoves[moveNumber].isPrisonner = 0;
     if(start == EPos_BarP1) // Si le mouvement vient de la prison, l arrivee n est pas calculee de la meme facon
     {
         potentialMoves[moveNumber].to = 24 - die;
-        potentialMoves[moveNumber].isPrisonner = 1;
         EvaluateToExit(&potentialMoves[moveNumber]);
     }
     else
@@ -272,7 +270,7 @@ void FillPotentialMoves(EPosition start, int die, int moveNumber)
         {
             potentialMoves[moveNumber].to = start - die;
         }
-        PriorityLevel(&potentialMoves[moveNumber]);
+        MoveType(&potentialMoves[moveNumber]);
     }
 }
 
@@ -331,23 +329,23 @@ int CanWeEat(int length)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-/** PriorityLevel
-  * Calcule le niveau de priorite d un mouvement potentiel
+/** MoveType
+  * Donne le type du mouvement fraichement trouve
   * @param Strat_move move : le mouvement a evaluer
 **/
-void PriorityLevel(Strat_move* move)
+void MoveType(Strat_move* move)
 {
 	SZone zoneArrivee = currentGameState.zones[move->to];
-    // Peut-il proteger un pion seul ?
-    if(zoneArrivee.player == EPlayer1 && zoneArrivee.nb_checkers == 1)
+    
+    if(zoneArrivee.player == EPlayer1 && zoneArrivee.nb_checkers == 1)  // Peut-il proteger un pion seul ?
     {
         move->canProtect = 1;
     }
-	if(zoneArrivee.player == EPlayer2 && zoneArrivee.nb_checkers == 1)
+	if(zoneArrivee.player == EPlayer2 && zoneArrivee.nb_checkers == 1)  // Peut-il manger un pion adverse ?
 	{
 		move->canEat = 1;
 	}
-	if(move->to == EPos_OutP1)
+	if(move->to == EPos_OutP1)                                          // Peut-il marquer ?
 	{
 		move->canMark = 1;
 	}
@@ -400,7 +398,7 @@ void ChooseMove(int tabLength)
     
     // Priorite 1 : Si on a des prisonniers
     int max = 0;
-    if(potentialMoves[0].isPrisonner)   // S il y a des prisonniers, seuls eux sont listes donc pas besoin de parcourir la liste
+    if(potentialMoves[0].from == EPos_BarP1)   // S il y a des prisonniers, seuls eux sont listes donc pas besoin de parcourir la liste
     {
         int lastPriority = -1;
         while(i <= tabLength)

@@ -33,7 +33,7 @@ int FindMaxPriority(Strat_move* tab, int length)
         
     i = 0;              // 3eme balayage : On prend au hasard un des maximums
     int ran = rand() % nb;
-    while(i <= length && ran > 0)
+    while(i <= length && ran > -1)
     {
         if(tab[i].priority == max && !(tab[i].canMark) )
         {
@@ -72,11 +72,9 @@ int FindMaxPriority2(Strat_move* tab, int length)
         }
         i++;
     }
-    printf("Il a trouve %d random\n", nb);
                 
     i = 0;              // 3eme balayage : On prend au hasard un des maximums
     int ran = rand() % nb;
-    printf("rand = %d\n", ran);
     while(i <= length && ran > -1)
     {
         if(tab[i].priority == max )
@@ -86,6 +84,5 @@ int FindMaxPriority2(Strat_move* tab, int length)
         }
         i++;
     }
-    printf("Renvoi de ret = %d\n", ret);
     return ret;
 }
