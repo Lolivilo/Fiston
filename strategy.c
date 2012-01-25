@@ -342,12 +342,6 @@ void PriorityLevel(Strat_move* move)
     if(zoneArrivee.player == EPlayer1 && zoneArrivee.nb_checkers == 1)
     {
         move->canProtect = 1;
-        move->priority = 2;
-        if(currentGameState.zones[move->from].nb_checkers == 2) // Si la protection rend un pion mangeable : moins prioritaire
-        {
-            move->priority = 1;
-        }
-       
     }
 	if(zoneArrivee.player == EPlayer2 && zoneArrivee.nb_checkers == 1)
 	{
@@ -393,8 +387,6 @@ void EvaluateToExit(Strat_move* move)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// UNE SEULE FOIS L AFFECTATION DANS LE TABLEAU FINAL ???!!!
-
 
 
 /** ChooseMove
@@ -605,7 +597,9 @@ int ChooseDefaultMove(int length)
             {
                 potentialMoves[i].priority = 2; // Mise en danger d un pion sur la zone de depart
             }
-            else if( (currentGameState.zones[potentialMoves[i].to].nb_checkers == 0) && (currentGameState.zones[EPos_BarP2].nb_checkers == 0) )
+            else if( (currentGameState.zones[potentialMoves[i].to].nb_checkers == 0)
+                  && (currentGameState.zones[EPos_BarP2].nb_checkers == 0)
+                  && (dies[5] == dies[4]) )
             {
                 potentialMoves[i].priority = 1; // Mise en place d un seul pion mais avec aucun pion adverse a sortir de prison
             }
@@ -622,7 +616,7 @@ int ChooseDefaultMove(int length)
     
     
     // Choix au hasard
-    if(length == 0 && potentialMoves[0].to == EPos_OutP1)
+    if(length == 0 && potentialMoves[0].to == EPos_OutP1)   // Erreur si length == 0 (division)
     {
         return(-1);
     }
@@ -656,7 +650,6 @@ int ChooseDefaultMove(int length)
 **/
 void FinalReturn(int index)
 {
-    printf("Final return(%d)\n", index);
     if(index != -1)
     {
         // Parcours du tableau
