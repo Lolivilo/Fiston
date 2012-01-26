@@ -23,7 +23,6 @@ void FillPotentialMoves(EPosition start, int length, int moveNumber);
 void IsEligibleForRelease();
 void AnalysePlateau();
 void UpdateAfterDecision(int previousMoveIndex, int exitPrison);
-void MoveType(Strat_move* move);
 void EvaluateToExit(Strat_move* move);
 void ChooseMove(int tabLength);
 void FinalReturn(int index);

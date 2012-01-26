@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "strategy.h"
+#include "traitementTableau.h"
+#include "analysePlateau.h"
 
 
 int main()

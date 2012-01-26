@@ -1,3 +1,3 @@
 #! /bin/bash
 
-gcc -Wall main.c strategy.c strategy.h backgammon.h traitementTableau.c traitementTableau.h -o back
+gcc -Wall main.c strategy.c strategy.h backgammon.h traitementTableau.c traitementTableau.h analysePlateau.c analysePlateau.h -o back

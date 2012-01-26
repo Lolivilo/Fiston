@@ -250,80 +250,13 @@ void FillPotentialMoves(EPosition start, int die, int moveNumber)
         {
             potentialMoves[moveNumber].to = start - die;
         }
-        MoveType(&potentialMoves[moveNumber]);
+        MoveType(&currentGameState, &potentialMoves[moveNumber]);
     }
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-/** int CanWeEat()
- * Analyse le plateau et regarde si on peut manger
- * @return int : 1 si on peut manger ; 0 sinon
- **/
-int CanWeEat(int length)
-{
-    int i = 0;
-    // On regarde dans notre tableau si on peut manger
-    while(i <= length)
-    {
-        if(potentialMoves[i].canEat)
-        {
-            return 1;
-        }
-        i++;
-    }
-    return 0;
-}
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-/** int CanWeProtect(int length)
- * Analyse le plateau et regarde si on peut proteger
- * @return int : 1 si on peut proteger ; 0 sinon
- **/
-int CanWeProtect(int length)
-{
-    int i = 0;
-    // On regarde dans notre tableau si on peut proteger
-    while(i <= length)
-    {
-        if(potentialMoves[i].canProtect)
-        {
-            return 1;
-        }
-        i++;
-    }
-    return 0;
-}
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/** MoveType
-  * Donne le type du mouvement fraichement trouve
-  * @param Strat_move move : le mouvement a evaluer
-**/
-void MoveType(Strat_move* move)
-{
-	SZone zoneArrivee = currentGameState.zones[move->to];
-    
-    if(zoneArrivee.player == EPlayer1 && zoneArrivee.nb_checkers == 1)  // Peut-il proteger un pion seul ?
-    {
-        move->canProtect = 1;
-    }
-	if(zoneArrivee.player == EPlayer2 && zoneArrivee.nb_checkers == 1)  // Peut-il manger un pion adverse ?
-	{
-		move->canEat = 1;
-	}
-	if(move->to == EPos_OutP1)                                          // Peut-il marquer ?
-	{
-		move->canMark = 1;
-	}
-}
     
     
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -380,7 +313,7 @@ void ChooseMove(int tabLength)
         FinalReturn( ChooseMarkMove(tabLength) );
         choosen = 1;
     }
-    else if( CanWeProtect(tabLength) )
+    else if( CanWeProtect(potentialMoves, tabLength) )
     {
         choosen = 1;
         /*if(i <= tabLength)     // On continue de parcourir seulement s'il y a d'autres mouvements
@@ -401,7 +334,7 @@ void ChooseMove(int tabLength)
         FinalReturn( ChooseProtectMove(tabLength) );
     }
     
-    if(!(choosen) && CanWeEat(tabLength))   // Si on peut manger un pion
+    if(!(choosen) && CanWeEat(potentialMoves, tabLength) )   // Si on peut manger un pion
     {
         choosen = 1;
         FinalReturn( ChooseEatMove(tabLength) );
