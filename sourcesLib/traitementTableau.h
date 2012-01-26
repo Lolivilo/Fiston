@@ -4,11 +4,9 @@
 #include "strategy.h"
 
 
+/** Fonctions relatives aux traitements de tableaux
+**/
 
-
-void ResetTab(SMove tab[4]);
-void CopyTab(SMove* const dest, const SMove* const src);
 int FindMaxPriority(Strat_move* tab, int length);
 int FindMaxPriority2(Strat_move* tab, int length);
-
 #endif

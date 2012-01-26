@@ -4,34 +4,6 @@
 #include "strategy.h"
 
 
-/** traitementTableau.h
-  * Regroupe toutes les fonctions relatives aux traitements de tableaux
-  * Aucune prise de decision n est faite ici (voir strategy.c)
- **/
-
-
-void ResetTab(SMove tab[4])
-{
-    int i;
-    for(i = 0 ; i < 4 ; i++)
-    {
-        tab[i].src_point = EPos_nopos;
-        tab[i].dest_point = EPos_nopos;
-    }
-}
-
-
-void CopyTab(SMove* const dest, const SMove* const src)
-{
-    int i;
-    for(i = 0 ; i < 4 ; i++)
-    {
-        dest[i] = src[i];
-    }
-    
-}
-
-
 int FindMaxPriority(Strat_move* tab, int length)
 {
     int i = 0;

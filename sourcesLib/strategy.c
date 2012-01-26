@@ -60,7 +60,13 @@ void MakeDecision(const SGameState * const gameState, SMove moves[4], unsigned i
 	srand(time(NULL));	// Pour le random
 	currentGameState = *gameState;  // Copie locale de l etat courant du jeu
 
-    ResetTab(moves);    // RaZ du tableau recu
+    // RaZ du tableau de mouvements
+    int i = 0;
+    for(i = 0 ; i < 4; i++)
+    {
+        moves[i].src_point = EPos_nopos;
+        moves[i].dest_point = EPos_nopos;
+    }
     
 	// Remplissage du tableau de des
 	dies[1] = currentGameState.die1;
@@ -80,7 +86,11 @@ void MakeDecision(const SGameState * const gameState, SMove moves[4], unsigned i
 	//printf("DES INITIAUX : | %d | %d | %d | %d |\n", dies[1], dies[2], dies[3], dies[4]);	
 	ListPotentialMoves();
     
-    CopyTab(moves, finalMoves); // Copie de nos mouvements choisis dans le tableau de renvoi
+    // Remplissage du tableau renvoye
+    for(i = 0 ; i <= 3 ; i++)
+    {
+        moves[i] = finalMoves[i];
+    }
 }
 
 
