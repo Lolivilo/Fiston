@@ -20,7 +20,7 @@
 
 // Variables locales
 SGameState currentGameState;    // Copie locale de l etat courant du jeu
-Strat_move* potentialMoves;     // Tableau de mouvements potentiels
+Strat_move* potentialMoves = NULL;     // Tableau de mouvements potentiels
 int dies[5];	// | nombre_de_des | de1 | de2 | de3 | de4 |
 SMove* finalMoves;
 
@@ -94,7 +94,8 @@ void ListPotentialMoves()
 {
 	// Remise a zero du tableau de mouvements
     potentialMoves = realloc(potentialMoves, 0);
-    if(potentialMoves == NULL)
+    potentialMoves = NULL;
+    if(potentialMoves != NULL)
     {
         printf("Erreur d'allocation !\n");
         exit(0);
