@@ -3,6 +3,7 @@
 #include <time.h>
 #include <string.h>
 #include "strategy.h"
+#include "analysePlateau.h"
 #include "traitementTableau.h"
 
 
@@ -24,15 +25,6 @@ int dies[5];	// | nombre_de_des | de1 | de2 | de3 | de4 |
 SMove* finalMoves;
 
 
-void InitLibrary(char name[50])
-{
-	strcpy(name, "Strategie_Olivier_&_Oussama");
-}
-
-void StartMatch(const unsigned int target_score)
-{
-	
-}
 
 void StartGame()
 {
@@ -61,20 +53,7 @@ void EndGame()
     }
 }
 
-void EndMatch()
-{
-	
-}
 
-int DoubleStack(const SGameState * const gameState)
-{
-	return 0;
-}
-
-int TakeDouble(const SGameState * const gameState)
-{
-	return 0;
-}
 
 void MakeDecision(const SGameState * const gameState, SMove moves[4], unsigned int lastTimeError)
 {
@@ -279,34 +258,6 @@ void FillPotentialMoves(EPosition start, int die, int moveNumber)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-/** int CanWeMark()
-  * Analyse le plateau et regarde si on peut marquer
-  * @return int : 1 si on peut marquer ; 0 sinon
-**/
-int CanWeMark()
-{
-    // On parcours toutes les zones de 1 & 6 + la zone de marquage et on regarde si on a nos 16 pions
-    EPosition current;
-    int count = currentGameState.zones[EPos_OutP1].nb_checkers;
-    for(current = EPos_1 ; current <= EPos_6 ; current++)
-    {
-        if(currentGameState.zones[current].player == EPlayer1)
-        {
-            count += currentGameState.zones[current].nb_checkers;
-        }
-    }
-    if(count == 15)
-    {
-        return 1;
-    }
-    return 0;
-}
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 /** int CanWeEat()
  * Analyse le plateau et regarde si on peut manger
  * @return int : 1 si on peut manger ; 0 sinon
@@ -424,7 +375,7 @@ void ChooseMove(int tabLength)
         FinalReturn( FindMaxPriority(potentialMoves, tabLength) );
         choosen = 1;
     }
-    else if( CanWeMark() )
+    else if( CanWeMark(&currentGameState) )
     {
         FinalReturn( ChooseMarkMove(tabLength) );
         choosen = 1;
@@ -619,24 +570,6 @@ int ChooseProtectMove(int length)
     }
     
     return ( FindMaxPriority(potentialMoves, length) );
-    /*
-    int i = 0;
-    int choice = -1;
-    EPosition dangerous = EPos_nopos;
-    while( i <= length )  // Il est plus important de manger le pion le plus proche de la sortie
-    {
-        if(potentialMoves[i].canEat)
-        {
-            if(potentialMoves[i].to <= dangerous)
-            {
-                choice = i;
-                dangerous = potentialMoves[i].to;
-            }
-        }
-        i++;
-    }*/
-    
-    //return choice;
 }
 
 
