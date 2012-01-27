@@ -10,7 +10,10 @@
  **/
 
 
-void ResetTab(SMove tab[4])
+/** void ResetTab(SMove* const tab)
+  * Remet a zero le tableau de mouvements que l on recoit de l ui
+**/
+void ResetTab(SMove* const tab)
 {
     int i;
     for(i = 0 ; i < 4 ; i++)
@@ -20,7 +23,14 @@ void ResetTab(SMove tab[4])
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+/** void CopyTab(SMove* const dest, const SMove* const src)
+  * Copie le tableau de mouvements finaux temporaires dans celui qui sert de renvoi
+  * @param SMove* const dest : le tableau final dans lequel on veut copier
+  * @param const SMove* const src : le tableau de mouvements finaux a copier
+**/
 void CopyTab(SMove* const dest, const SMove* const src)
 {
     int i;
@@ -30,6 +40,9 @@ void CopyTab(SMove* const dest, const SMove* const src)
     }
     
 }
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 int FindMaxPriority(Strat_move* tab, int length)
@@ -73,6 +86,8 @@ int FindMaxPriority(Strat_move* tab, int length)
     return ret;
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 int FindMaxPriority2(Strat_move* tab, int length)

@@ -109,14 +109,26 @@ int main()
         moves[j].src_point = EPos_1;
         moves[j].dest_point = EPos_1;
     }
+    char nom[50];
+    InitLibrary(nom);
+    printf("%s\n", nom);
+    
     StartGame();
-	MakeDecision(&etat, moves, 0);
-    int a = 0;
-    printf("\n\nTableau renvoye : \n");
-    for(a = 0 ; a <= 3 ; a++)
+    
+    printf("DoubleStack = %d\n", DoubleStack(&etat));
+	int k;
+    for(k = 0 ; k <= 0 ; k++)
     {
-        printf("moves[%d].src_point = %d\tmoves[%d].dest_point = %d\n", a, moves[a].src_point, a, moves[a].dest_point);
+        MakeDecision(&etat, moves, 0);
+        int a = 0;
+        printf("\n\nTableau renvoye : \n");
+        for(a = 0 ; a <= 3 ; a++)
+        {
+            printf("moves[%d].src_point = %d\tmoves[%d].dest_point = %d\n", a, moves[a].src_point, a, moves[a].dest_point);
+        }
     }
+    
+    
     EndGame();
     
     
