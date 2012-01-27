@@ -79,5 +79,9 @@ int DoubleStack(const SGameState * const gameState)
 
 int TakeDouble(const SGameState * const gameState)
 {
-	return 0;
+	if( DoubleStack(gameState) )
+    {
+        return 1;
+    }
+    return 0;
 }
