@@ -219,7 +219,7 @@ void IsEligibleForRelease()
          int moveNumber : le numero du mouvement a ajouter (pour redimensionner le tableau)
   *
 **/
-void FillPotentialMoves(EPosition start, int die, int moveNumber)
+void FillPotentialMoves(const EPosition start, const int die, const int moveNumber)
 {
     // Augmentation de la taille du tableau de 1
     potentialMoves = (Strat_move*) realloc(potentialMoves, (moveNumber+1) * sizeof(Strat_move));
@@ -258,7 +258,7 @@ void FillPotentialMoves(EPosition start, int die, int moveNumber)
   * Priorite 3 : Si on peut aller sur une zone nous appartenant => 2
   * Priorite 4 : Si aucune autre solution                       => 1
 **/
-void EvaluateToExit(Strat_move* move)
+void EvaluateToExit(Strat_move* const move)
 {
     SZone exit = currentGameState.zones[move->to];
     if( (exit.player == EPlayer2) && (exit.nb_checkers == 1) )
@@ -287,7 +287,7 @@ void EvaluateToExit(Strat_move* move)
   * Selectionne un mouvement dans le tableau de mouvements potentiels
   * @param Strat_move currentList[MAX_POTENTIAL_MOVES] : liste des mouvements potentiels
 **/
-void ChooseMove(int tabLength)
+void ChooseMove(const int tabLength)
 {
 	int choosen = 0;
     
@@ -344,7 +344,7 @@ void ChooseMove(int tabLength)
     * @param previousMoveIndex : la position, dans la liste, du mouvement precedemment effectue
     * @param exitPrison : indique si le mouvement choisit est une sortie de prison
 **/
-void UpdateAfterDecision(int previousMoveIndex, int exitPrison)
+void UpdateAfterDecision(const int previousMoveIndex, const int exitPrison)
 {
 	Strat_move lastMove = potentialMoves[previousMoveIndex];
     
@@ -404,7 +404,7 @@ void UpdateAfterDecision(int previousMoveIndex, int exitPrison)
  * @return int : l index du mouvement choisi (-1 si aucun)
  *
  **/
-int ChooseMarkMove(int length)
+int ChooseMarkMove(const int length)
 {
     // Si on est la, tous les mouvements ont un canMark == 1 !
     int i = 0;
@@ -435,7 +435,7 @@ int ChooseMarkMove(int length)
   * @return int : l index du mouvement choisi (-1 si aucun)
   *
  **/
-int ChooseEatMove(int length)
+int ChooseEatMove(const int length)
 {
     int i = 0;
     int choice = -1;
@@ -470,7 +470,7 @@ int ChooseEatMove(int length)
  * @return int : l index du mouvement choisi (-1 si aucun)
  *
  **/
-int ChooseProtectMove(int length)
+int ChooseProtectMove(const int length)
 {
     int i = 0;
     while( i <= length )
@@ -505,7 +505,7 @@ int ChooseProtectMove(int length)
   * @param length : la taille du tableau de mouvements
   * return int : l index du mouvement selectionne
 */
-int ChooseDefaultMove(int length)
+int ChooseDefaultMove(const int length)
 {
     int i = 0;
     // Remplissage 1 a 6
@@ -578,7 +578,7 @@ int ChooseDefaultMove(int length)
   * @param Strat_move* move : le mouvement a stocker
   *
 **/
-void FinalReturn(int index)
+void FinalReturn(const int index)
 {
     if(index != -1)
     {

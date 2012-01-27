@@ -43,16 +43,17 @@ int DoubleStack(const SGameState * const gameState)
     {
         if( gameState->zones[i].player == EPlayer1 )
         {   
-            CasesRestantesJ1 = CasesRestantesJ1 + ( (24-(int)i) * gameState->zones[i].nb_checkers );                                                                             
+            CasesRestantesJ1 = CasesRestantesJ1 + ( ((int)i + 1) * gameState->zones[i].nb_checkers );                                                                             
         }
         else if( gameState->zones[i].player == EPlayer2 )
         {
-            CasesRestantesJ2 = CasesRestantesJ2 + ( ((int)i+1) * gameState->zones[i].nb_checkers );
+            CasesRestantesJ2 = CasesRestantesJ2 + ( (24 - (int)i) * gameState->zones[i].nb_checkers );
         }
         // S il a des prisonners adverses, on prend le cas ou ils sortiront avec un de de valeur 6
         CasesRestantesJ2 += gameState->zones[EPos_BarP2].nb_checkers * 19;
     }
-    
+    printf("CasesRestantesJ1 = %d\n", CasesRestantesJ1);
+    printf("CasesRestantesJ2 = %d\n", CasesRestantesJ2);
     // On deduit, des distances calculees, les decisions a prendre
     if( (CasesRestantesJ1 <= (0.70 * CasesRestantesJ2)) && (gameState->zones[EPos_BarP1].nb_checkers == 0) )
     {
@@ -79,7 +80,7 @@ int DoubleStack(const SGameState * const gameState)
 
 int TakeDouble(const SGameState * const gameState)
 {
-	if( DoubleStack(gameState) )
+	if( DoubleStack(gameState) )    // On renvoie le meme resultat que celui de DoubleStack
     {
         return 1;
     }

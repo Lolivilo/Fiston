@@ -17,17 +17,19 @@ typedef struct
     int priority;
 } Strat_move;
 
+
 // Prototypes de fonctions
 void ListPotentialMoves();
-void FillPotentialMoves(EPosition start, int length, int moveNumber);
 void IsEligibleForRelease();
-void AnalysePlateau();
-void UpdateAfterDecision(int previousMoveIndex, int exitPrison);
-void EvaluateToExit(Strat_move* move);
-void ChooseMove(int tabLength);
-void FinalReturn(int index);
-int ChooseMarkMove(int length);
-int ChooseEatMove(int length);
-int ChooseProtectMove(int length);
-int ChooseDefaultMove(int length);
+void FillPotentialMoves(const EPosition start, const int die, const int moveNumber);
+void EvaluateToExit(Strat_move* const move);
+void ChooseMove(const int tabLength);
+void UpdateAfterDecision(const int previousMoveIndex, const int exitPrison);
+int ChooseMarkMove(const int length);
+int ChooseEatMove(const int length);
+int ChooseProtectMove(const int length);
+int ChooseDefaultMove(const int length);
+void FinalReturn(const int index);
+
+
 #endif
