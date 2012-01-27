@@ -15,6 +15,7 @@ typedef struct
 	int canMark;	// Possibilite de marquer (booleen)
     int canProtect; // Possibilite de proteger (booleen)
     int priority;
+    int proba;
 } Strat_move;
 
 
@@ -29,6 +30,7 @@ int ChooseMarkMove(const int length);
 int ChooseEatMove(const int length);
 int ChooseProtectMove(const int length);
 int ChooseDefaultMove(const int length);
+int ProbaRisk(const EPosition zone);
 void FinalReturn(const int index);
 
 

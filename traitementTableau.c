@@ -45,6 +45,50 @@ void CopyTab(SMove* const dest, const SMove* const src)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+int FindMinProba(const Strat_move* const tab, const int length)
+{
+    int i = 0;
+    int nb = 0;
+    int ret = -1;
+    int max = 0;
+    
+    while(i <= length)  // 1er balayage : On cherche la plus petite proba
+    {
+        if( (tab[i].proba >= max) )
+        {
+            max = tab[i].proba;
+        }
+        i++;
+    }
+    
+    i = 0;
+    while(i <= length)  // 2eme balayage : On compte les mouvements avec une proba min
+    {
+        if( (tab[i].proba == max) )
+        {
+            nb++;
+        }
+        i++;
+    }
+    
+    i = 0;              // 3eme balayage : On prend au hasard un des min
+    int ran = rand() % nb;
+    while(i <= length && ran > -1)
+    {
+        if(tab[i].proba == max )
+        {
+            ran--;
+            ret = i;
+        }
+        i++;
+    }
+    return ret;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 /** int FindMaxPriority(const Strat_move* const tab, const int length)
   * Determine le mouvement avec la priorite maximale
   * Choisis un mouvement au hasard parmi ceux de la priorite maximale, s il y en a plusieurs
@@ -69,28 +113,35 @@ int FindMaxPriority(const Strat_move* const tab, const int length)
         i++;
     }
     
-    i = 0;
-    while(i <= length)  // 2eme balayage : On compte les mouvements avec une priorite max
+    if(max == 1)
     {
-        if( (tab[i].priority == max) )
-        {
-            nb++;
-        }
-        i++;
+        return( FindMinProba( tab, length) );
     }
-        
-    i = 0;              // 3eme balayage : On prend au hasard un des maximums
-    int ran = rand() % nb;
-    while(i <= length && ran > -1)
+    else
     {
-        if(tab[i].priority == max && !(tab[i].canMark) )
+        i = 0;
+        while(i <= length)  // 2eme balayage : On compte les mouvements avec une priorite max
         {
-            ran--;
-            ret = i;
+            if( (tab[i].priority == max) )
+            {
+                nb++;
+            }
+            i++;
         }
-        i++;
+    
+        i = 0;              // 3eme balayage : On prend au hasard un des maximums
+        int ran = rand() % nb;
+        while(i <= length && ran > -1)
+        {
+            if(tab[i].priority == max && !(tab[i].canMark) )
+            {
+                ran--;
+                ret = i;
+            }
+            i++;
+        }
+        return ret;
     }
-    return ret;
 }
 
 

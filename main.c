@@ -10,8 +10,8 @@ int main()
 	// Creation d'un SGameState d'origine
 	SZone plateau[28];
 	
-	plateau[0].player = EPlayer2;
-	plateau[0].nb_checkers = 2;
+	plateau[0].player = EPlayer1;
+	plateau[0].nb_checkers = 1;
 	
 	plateau[1].player = EPlayer2;
 	plateau[1].nb_checkers = 0;
@@ -19,14 +19,14 @@ int main()
 	plateau[2].player = EPlayer2;
 	plateau[2].nb_checkers = 0;
 	
-	plateau[3].player = EPlayer2;
-	plateau[3].nb_checkers = 0;
+	plateau[3].player = EPlayer1;
+	plateau[3].nb_checkers = 2;
 	
-	plateau[4].player = EPlayer2;
-	plateau[4].nb_checkers = 0;
+	plateau[4].player = EPlayer1;
+	plateau[4].nb_checkers = 2;
 	
 	plateau[5].player = EPlayer1;
-	plateau[5].nb_checkers = 5;
+	plateau[5].nb_checkers = 1;
 	
 	plateau[6].player = EPlayer2;
 	plateau[6].nb_checkers = 0;
@@ -34,11 +34,11 @@ int main()
 	plateau[7].player = EPlayer1;
 	plateau[7].nb_checkers = 3;
 	
-	plateau[8].player = EPlayer2;
-	plateau[8].nb_checkers = 0;
+	plateau[8].player = EPlayer1;
+	plateau[8].nb_checkers = 2;
 	
-	plateau[9].player = EPlayer2;
-	plateau[9].nb_checkers = 0;
+	plateau[9].player = EPlayer1;
+	plateau[9].nb_checkers = 2;
 	
 	plateau[10].player = EPlayer2;
 	plateau[10].nb_checkers = 0;

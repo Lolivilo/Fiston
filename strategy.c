@@ -219,6 +219,7 @@ void FillPotentialMoves(const EPosition start, const int die, const int moveNumb
     potentialMoves[moveNumber].canMark = 0;
     potentialMoves[moveNumber].canProtect = 0;
     potentialMoves[moveNumber].priority = 0;
+    potentialMoves[moveNumber].proba = 0;
     if(start == EPos_BarP1) // Si le mouvement vient de la prison, l arrivee n est pas calculee de la meme facon
     {
         potentialMoves[moveNumber].to = 24 - die;
@@ -448,8 +449,8 @@ int ChooseProtectMove(const int length)
         }
         else if( (potentialMoves[i].canProtect) && (currentGameState.zones[potentialMoves[i].from].nb_checkers == 2) )
         {   
-            // PROBAAAAAAAAAAAA
             potentialMoves[i].priority = 1;
+            potentialMoves[i].proba = ProbaRisk(potentialMoves[i].from);
         }
         i++;
     }
@@ -486,15 +487,15 @@ int ChooseDefaultMove(const int length)
             }
             else if( (currentGameState.zones[potentialMoves[i].to].nb_checkers == 1) )
             {
-                // PROBAAAAAAA
                 potentialMoves[i].priority = 2; // Mise en danger d un pion sur la zone de depart
+                potentialMoves[i].proba = ProbaRisk(potentialMoves[i].from);
             }
             else if( (currentGameState.zones[potentialMoves[i].to].nb_checkers == 0)
                   && (currentGameState.zones[EPos_BarP2].nb_checkers == 0)
                   && (dies[5] == dies[4]) )
             {
-                // PROBAAAAAA
                 potentialMoves[i].priority = 1; // Mise en place d un seul pion mais avec aucun pion adverse a sortir de prison
+                potentialMoves[i].proba = ProbaRisk(potentialMoves[i].to);
             }
         }
         i++;
@@ -536,10 +537,77 @@ int ChooseDefaultMove(const int length)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-int probaRisk(EPosition zone)
+/** int probaRisk(const EPosition zone)
+  * Calcule le risque d etre mange au tour suivant
+  * @param const EPosition zone : la zone a evaluer
+  * @preturn int : 1- la probalibilite d etre mange
+**/
+int ProbaRisk(const EPosition zone)
 {
-    
+    if( ((currentGameState.zones[zone-6].player == EPlayer2) && (currentGameState.zones[zone-6].nb_checkers > 0))
+        && ((zone > EPos_6) && (zone < EPos_19)) )
+    {
+        return 100-47;
+    }
+    if( ((currentGameState.zones[zone-5].player == EPlayer2) && (currentGameState.zones[zone-5].nb_checkers > 0))
+        && ((zone > EPos_5) && (zone < EPos_20)) )
+    {
+        return 100-41;
+    }
+    if( ((currentGameState.zones[zone-4].player == EPlayer2) && (currentGameState.zones[zone-4].nb_checkers > 0))
+        && ((zone > EPos_4) && (zone < EPos_21)) )
+    {
+        return 100-41;
+    }
+    if( ((currentGameState.zones[zone-3].player == EPlayer2) && (currentGameState.zones[zone-3].nb_checkers > 0))
+        && ((zone > EPos_3) && (zone < EPos_22)) )
+    {
+        return 100-38;
+    }
+    if( ((currentGameState.zones[zone-2].player == EPlayer2) && (currentGameState.zones[zone-2].nb_checkers > 0))
+        && ( (zone > EPos_2) && (zone < EPos_23) ))
+    {
+        return 100-33;
+    }
+    if( ((currentGameState.zones[zone-1].player == EPlayer2) && (currentGameState.zones[zone-1].nb_checkers > 0))
+        && ( (zone > EPos_1) && (zone < EPos_24) ))
+    {
+        return 100-30;
+    }
+    if( ((currentGameState.zones[zone-7].player == EPlayer2) && (currentGameState.zones[zone-7].nb_checkers > 0))
+       && ( (zone > EPos_7) && (zone < EPos_18) ))
+    {
+        return 100-16;
+    }
+    if( ((currentGameState.zones[zone-8].player == EPlayer2) && (currentGameState.zones[zone-8].nb_checkers > 0))
+       && ( (zone > EPos_8) && (zone < EPos_17) ))
+    {
+        return 100-16;
+    }
+    if( ((currentGameState.zones[zone-9].player == EPlayer2) && (currentGameState.zones[zone-9].nb_checkers > 0))
+       && ( (zone > EPos_9) && (zone < EPos_16) ))
+    {
+        return 100-13;
+    }
+    if( ((currentGameState.zones[zone-10].player == EPlayer2) && (currentGameState.zones[zone-10].nb_checkers > 0))
+       && ( (zone > EPos_10) && (zone < EPos_15) ))
+    {
+        return 100-8;
+    }
+    if( ((currentGameState.zones[zone-12].player == EPlayer2) && (currentGameState.zones[zone-12].nb_checkers > 0))
+       && ( (zone > EPos_12) && (zone < EPos_13) ))
+    {
+        return 100-8;
+    }
+    if( ((currentGameState.zones[zone-11].player == EPlayer2) && (currentGameState.zones[zone-11].nb_checkers > 0))
+       && ( (zone > EPos_11) && (zone < EPos_14) ))
+    {
+        return 100-5;
+    }
+    return 2;
 }
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
