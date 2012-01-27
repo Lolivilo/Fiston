@@ -45,7 +45,14 @@ void CopyTab(SMove* const dest, const SMove* const src)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-int FindMaxPriority(Strat_move* tab, int length)
+/** int FindMaxPriority(const Strat_move* const tab, const int length)
+  * Determine le mouvement avec la priorite maximale
+  * Choisis un mouvement au hasard parmi ceux de la priorite maximale, s il y en a plusieurs
+  * @param const Strat_move* const tab : le tableau de mouvements
+  * @param const int length : la taille du tableau
+  * @return int : l index du mouvement choisi dans le tableau
+**/
+int FindMaxPriority(const Strat_move* const tab, const int length)
 {
     int i = 0;
     int nb = 0;
@@ -90,7 +97,15 @@ int FindMaxPriority(Strat_move* tab, int length)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-int FindMaxPriority2(Strat_move* tab, int length)
+/** int FindMaxPriority2(const Strat_move* const tab, const int length)
+ * Determine le mouvement avec la priorite maximale
+ * Choisis un mouvement au hasard parmi ceux de la priorite maximale, s il y en a plusieurs
+ * Utilise seulement pour determiner le mouvement lorsque l on peut marquer
+ * @param const Strat_move* const tab : le tableau de mouvements
+ * @param const int length : la taille du tableau
+ * @return int : l index du mouvement choisi dans le tableau
+ **/
+int FindMaxPriority2(const Strat_move* const tab, const int length)
 {
     int i = 0;
     int nb = 0;

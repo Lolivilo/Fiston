@@ -96,7 +96,7 @@ int main()
 		etat.zones[i] = plateau[i];
 	}
 	etat.die1 = 3;
-	etat.die2 = 3;
+	etat.die2 = 4;
 	etat.score = 0;
 	etat.scoreP2 = 0;
 	etat.stake = 0;
